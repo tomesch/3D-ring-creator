@@ -1,0 +1,20 @@
+{
+  "name": "jweel-rings",
+  "version": "0.0.0",
+  "authors": [
+    "Thomas Eschemann <tom.eschemann@gmail.com>",
+    "Joris Girardot <joris.girardot@gmail.com>",
+    "Claudia Tanase <tanaseclaudiag@gmail.com>",
+    "Philippe Gaultier <philigaultier@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "threejs": "*",
+    "requirejs": "*"
+  }
+}

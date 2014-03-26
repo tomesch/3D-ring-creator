@@ -1,0 +1,25 @@
+{
+  "name": "jweel-rings",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "contributors": [
+    "Thomas Eschemann <tom.eschemann@gmail.com>",
+    "Joris Girardot <joris.girardot@gmail.com>",
+    "Claudia Tanase <tanaseclaudiag@gmail.com>",
+    "Philippe Gaultier <philigaultier@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "grunt": "~0.4.4",
+    "grunt-contrib-requirejs": "~0.4.3",
+    "requirejs": "~2.1.11",
+    "grunt-bower-task": "~0.3.4",
+    "grunt-contrib-connect": "~0.7.1",
+    "grunt-contrib-jshint": "~0.9.2",
+    "grunt-githooks": "~0.3.1"
+  }
+}
