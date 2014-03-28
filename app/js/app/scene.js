@@ -1,6 +1,5 @@
-define(function () {
+define(['three'], function (THREE) {
   'use strict';
-  return {
-
-  };
+  var scene = new THREE.Scene();
+  return scene;
 });
