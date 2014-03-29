@@ -30,7 +30,6 @@ module.exports = function(grunt) {
         indent: 2,
         nonew: true,
         quotmark: 'single',
-        unused: true,
         strict: true,
         trailing: true,
         white: true,
