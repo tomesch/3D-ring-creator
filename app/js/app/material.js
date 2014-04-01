@@ -5,6 +5,7 @@ define(['three'], function (THREE) {
       color: 0x000000,
       shading: THREE.FlatShading
     }),
-    wire: new THREE.MeshBasicMaterial({wireframe: true})
+    wire: new THREE.MeshBasicMaterial({wireframe: true}),
+    line: new THREE.LineBasicMaterial({color: 0xff00f0})
   };
 });
