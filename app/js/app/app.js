@@ -2,9 +2,8 @@ define(['three', 'scene', 'camera', 'renderer', 'material', 'ring', 'controls'],
   'use strict';
   var app = {
     init: function () {
-      var mesh = new THREE.Line(ring.getGeometry(), material.line);
+      var mesh = new THREE.Mesh(ring.getGeometry(), material.wire);
       scene.add(mesh);
-      renderer.render(scene, camera);
     },
     animate: function () {
       window.requestAnimationFrame(app.animate);
@@ -20,3 +19,4 @@ define(['three', 'scene', 'camera', 'renderer', 'material', 'ring', 'controls'],
   };
   return app;
 });
+

@@ -6,7 +6,7 @@ require.config({
   },
   paths: {
     three: '../lib/three',
-    threeCore: '../lib/threejs/build/three.min',
+    threeCore: '../lib/threejs/build/three',
     OrbitControls: '../lib/threejs-controls/controls/OrbitControls'
   }
 });
