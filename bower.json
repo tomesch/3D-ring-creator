@@ -17,6 +17,7 @@
     "threejs": "*",
     "requirejs": "*",
     "two": "~0.3.0",
-    "threejs-controls": "*"
+    "threejs-controls": "*",
+    "threejs-exporters": "*"
   }
 }

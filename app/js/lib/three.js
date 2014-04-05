@@ -1,4 +1,4 @@
-define(['threeCore', 'OrbitControls'], function(threeCore) {
+define(['threeCore', 'OrbitControls', 'OBJExporter'], function(threeCore) {
   'use strict';
   return threeCore;
 });

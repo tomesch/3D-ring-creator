@@ -2,12 +2,14 @@ require.config({
   baseUrl: 'js/app',
   shim: {
     'threeCore': {exports: 'THREE'},
-    'OrbitControls': {deps: ['threeCore'], exports: 'THREE'}
+    'OrbitControls': {deps: ['threeCore'], exports: 'THREE'},
+    'OBJExporter': {deps: ['threeCore'], exports: 'THREE'}
   },
   paths: {
     three: '../lib/three',
     threeCore: '../lib/threejs/build/three',
-    OrbitControls: '../lib/threejs-controls/controls/OrbitControls'
+    OrbitControls: '../lib/threejs-controls/controls/OrbitControls',
+    OBJExporter: '../lib/threejs-exporters/exporters/OBJExporter'
   }
 });
 

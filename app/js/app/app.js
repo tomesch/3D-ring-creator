@@ -1,4 +1,4 @@
-define(['three', 'scene', 'camera', 'renderer', 'material', 'ring', 'controls'], function (THREE, scene, camera, renderer, material, ring, controls) {
+define(['three', 'scene', 'camera', 'renderer', 'material', 'ring', 'controls', 'exporters'], function (THREE, scene, camera, renderer, material, ring, controls, exporters) {
   'use strict';
   var app = {
     init: function () {
