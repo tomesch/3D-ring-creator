@@ -6,6 +6,11 @@ define(['three'], function (THREE) {
       shading: THREE.FlatShading,
       side: THREE.DoubleSide
     }),
+    shiny: new THREE.MeshPhongMaterial({
+      color: 0x000000,
+      specular: 0x000000,
+      side: THREE.DoubleSide
+    }),
     wire: new THREE.MeshBasicMaterial({
       wireframe: true,
       color: 0x000000
