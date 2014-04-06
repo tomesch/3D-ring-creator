@@ -1,47 +1,5 @@
 define(['three'], function (THREE) {
   'use strict';
-  var circumference = 60;
-  var drawRing = function (sections, bezierCurvePoints) {
-    var offset = 0,
-    i = 0,
-    y = 0,
-    from,
-    to,
-    from2,
-    to2,
-    spline,
-    spline2,
-    pts,
-    pts2,
-    x,
-    geometry = new THREE.Geometry();
-
-    for (i = 0; i < sections.length; i++) {
-      for (y = 0; y < sections[i].vertices.length - 1; y += 1) {
-        from = sections[i].vertices[y];
-        to = sections[(i + 1) % sections.length].vertices[y];
-
-        from2 = sections[i].vertices[y + 1];
-        to2 = sections[(i + 1) % sections.length].vertices[y + 1];
-
-        spline = getBezierCurve(from, to);
-        spline2 = getBezierCurve(from2, to2);
-
-        pts = spline.getPoints(bezierCurvePoints);
-        pts2 = spline2.getPoints(bezierCurvePoints);
-
-        geometry.vertices = geometry.vertices.concat(pts).concat(pts2);
-
-        for (x = pts.length - 1; x > 0; x -= 1) {
-          geometry.faces.push(new THREE.Face3(offset + x, offset + x + pts.length, offset + x + pts.length - 1));
-          geometry.faces.push(new THREE.Face3(offset + x, offset + x - 1, offset + x + pts.length - 1));
-        }
-        offset += pts.length * 2;
-      }
-    }
-    geometry.mergeVertices();
-    return geometry;
-  };
   var getBezierCurve = function (p0, p3) {
     // http://spencermortensen.com/articles/bezier-circle/
     var kappa = 0.551915024494,
@@ -91,71 +49,74 @@ define(['three'], function (THREE) {
     p1.applyMatrix4(matrix.makeRotationX(p0AngletoY));
     p2.applyMatrix4(matrix.makeRotationX(p3AngletoY));
     return new THREE.CubicBezierCurve3(p0, p1, p2, p3);
-  };
-  return {
-    sections: [[
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, 5, 0),
-      new THREE.Vector3(2.5, 5, 0),
-      new THREE.Vector3(5, 5, 0),
-      new THREE.Vector3(5, 0, 0),
-      new THREE.Vector3(0, 0, 0)
-    ],
-    [
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, 5, 0),
-      new THREE.Vector3(3.5, 8, 0),
-      new THREE.Vector3(5, 5, 0),
-      new THREE.Vector3(5, 0, 0),
-      new THREE.Vector3(0, 0, 0)
-    ],
-    [
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, 5, 0),
-      new THREE.Vector3(2.5, 5, 0),
-      new THREE.Vector3(5, 5, 0),
-      new THREE.Vector3(5, 0, 0),
-      new THREE.Vector3(0, 0, 0)
-    ],
-    [
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, 5, 0),
-      new THREE.Vector3(2.5, 5, 0),
-      new THREE.Vector3(5, 5, 0),
-      new THREE.Vector3(5, 0, 0),
-      new THREE.Vector3(0, 0, 0)
-    ]
-    ],
-    setCircumference: function (c) {
-      circumference = c;
-    },
-    getCircumference: function () {
-      return circumference;
-    },
-    getRadius: function () {
-      return circumference / (2 * Math.PI);
-    },
-    getSections: function () {
-      return this.sections;
-    },
-    getGeometry: function () {
-      var sections = [],
-      step = (2 * Math.PI) / this.getSections().length,
-      splines = [],
-      i = 0,
-      geometry;
+  },
+  drawRing = function (sections, bezierCurvePoints) {
+    var offset = 0,
+    i = 0,
+    y = 0,
+    from,
+    to,
+    from2,
+    to2,
+    spline,
+    spline2,
+    pts,
+    pts2,
+    x,
+    geometry = new THREE.Geometry();
 
-      for (i = 0; i < this.getSections().length; i++) {
-        sections[i] = new THREE.Geometry();
-        sections[i].vertices = sections[i].vertices.concat(this.getSections()[i]);
-        // translate on the Y axis
-        sections[i].applyMatrix(new THREE.Matrix4().makeTranslation(0, this.getRadius(), 0));
-        // rotate arround the X axis
-        sections[i].applyMatrix(new THREE.Matrix4().makeRotationX(i * step));
+    for (i = 0; i < sections.length; i++) {
+      for (y = 0; y < sections[i].vertices.length - 1; y += 1) {
+        from = sections[i].vertices[y];
+        to = sections[(i + 1) % sections.length].vertices[y];
+
+        from2 = sections[i].vertices[y + 1];
+        to2 = sections[(i + 1) % sections.length].vertices[y + 1];
+
+        spline = getBezierCurve(from, to);
+        spline2 = getBezierCurve(from2, to2);
+
+        pts = spline.getPoints(bezierCurvePoints);
+        pts2 = spline2.getPoints(bezierCurvePoints);
+
+        geometry.vertices = geometry.vertices.concat(pts).concat(pts2);
+
+        for (x = pts.length - 1; x > 0; x -= 1) {
+          geometry.faces.push(new THREE.Face3(offset + x, offset + x + pts.length, offset + x + pts.length - 1));
+          geometry.faces.push(new THREE.Face3(offset + x, offset + x - 1, offset + x + pts.length - 1));
+        }
+        offset += pts.length * 2;
       }
-
-      geometry = drawRing(sections, 4);
-      return geometry;
     }
+    geometry.mergeVertices();
+    return geometry;
+  },
+  Ring = function (sections, radius) {
+    this._sections = sections;
+    this._radius = radius;
   };
+  Ring.prototype.setSections = function (sections) {
+    this._sections = sections;
+  };
+  Ring.prototype.getRadius = function () {
+    return this._radius;
+  };
+  Ring.prototype.getSections = function () {
+    return this._sections;
+  };
+  Ring.prototype.getGeometry = function () {
+    var sections = [],
+    step = (2 * Math.PI) / this.getSections().length,
+    i;
+
+    for (i = 0; i < this.getSections().length; i++) {
+      sections[i] = new THREE.Geometry();
+      sections[i].vertices = sections[i].vertices.concat(this._sections[i]);
+      sections[i].applyMatrix(new THREE.Matrix4().makeTranslation(0, this.getRadius(), 0));
+      sections[i].applyMatrix(new THREE.Matrix4().makeRotationX(i * step));
+    }
+
+    return drawRing(sections, 4);
+  };
+  return Ring;
 });
