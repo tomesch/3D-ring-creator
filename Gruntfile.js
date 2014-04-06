@@ -24,7 +24,13 @@ module.exports = function(grunt) {
     },
     jshint: {
       options: {
+        onevar: true,
         camelcase: true,
+        latedef: true,
+        undef: true,
+        devel: true,
+        browser: true,
+        predef: ['require', 'define'],
         curly: true,
         eqeqeq: true,
         indent: 2,
