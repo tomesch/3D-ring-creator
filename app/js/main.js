@@ -9,7 +9,8 @@ require.config({
     three: '../lib/three',
     threeCore: '../lib/threejs/build/three',
     OrbitControls: '../lib/threejs-controls/controls/OrbitControls',
-    OBJExporter: '../lib/threejs-exporters/exporters/OBJExporter'
+    OBJExporter: '../lib/threejs-exporters/exporters/OBJExporter',
+    two: '../lib/two/build/two'
   }
 });
 

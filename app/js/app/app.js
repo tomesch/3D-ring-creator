@@ -1,4 +1,4 @@
-define(['three', 'scene', 'camera', 'renderer', 'material', 'ring', 'controls', 'exporters'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters) {
+define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two) {
   'use strict';
   var app = {
     init: function () {
@@ -54,4 +54,3 @@ define(['three', 'scene', 'camera', 'renderer', 'material', 'ring', 'controls', 
   };
   return app;
 });
-

@@ -1,4 +1,4 @@
-define(['three', 'container'], function (THREE, container) {
+define(['three', 'threejs/container'], function (THREE, container) {
   'use strict';
   var renderer = new THREE.WebGLRenderer({antialias: true});
   renderer.setSize(container.offsetWidth, container.offsetHeight);
