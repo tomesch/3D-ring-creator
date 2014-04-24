@@ -1,4 +1,4 @@
-define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section) {
+define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, Selector) {
   'use strict';
   var app = {
     init: function () {
@@ -41,7 +41,8 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       twoScenes = [],
       i = 0,
       twoScene,
-      sections = [];
+      sections = [],
+      fileselector = new Selector(document.getElementById('inputFile'));
 
       scene.add(mesh);
 
@@ -61,6 +62,10 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         scene.remove(mesh);
         mesh = new THREE.Mesh(ring.getGeometry(), material.wire);
         scene.add(mesh);
+      });
+
+      window.addEventListener('filechange', function () {
+        var file = fileselector.getSelectedFile();
       });
 
       function twoTothree(vertices) {

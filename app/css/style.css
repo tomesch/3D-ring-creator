@@ -31,3 +31,10 @@ html, body{
 #twojs-containers > div:nth-child(1n+3){
   border-top: 1px solid #000;
 }
+
+
+#inputfile-container {
+  position: fixed;
+  top:20px;
+  right: 20px;
+}
