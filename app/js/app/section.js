@@ -26,6 +26,7 @@ define(['two'], function (Two) {
   };
   return function (scene) {
     var anchors = [],
+    baseAnchors = [],
     group = scene.makeGroup(),
     i = 0,
     circleRadius = 4,
@@ -34,13 +35,12 @@ define(['two'], function (Two) {
     resize,
     rect;
 
-    anchors.push(new Two.Vector(0, 0));
+    anchors.push(new Two.Anchor(0, 0, 0, 0, 0, 0, Two.Commands.move));
     anchors.push(new Two.Anchor(0, 50, 0, 50, 0, 50, Two.Commands.curve));
-    anchors.push(new Two.Anchor(25, 50, 25, 50, 25, 50, Two.Commands.curve));
     anchors.push(new Two.Anchor(50, 50, 50, 50, 50, 50, Two.Commands.curve));
-    anchors.push(new Two.Vector(50, 0));
+    anchors.push(new Two.Anchor(50, 0, 50, 0, 50, 0, Two.Commands.curve));
 
-    polygon = new Two.Polygon(anchors, true, false);
+    polygon = new Two.Polygon(anchors, true, true, true);
     polygon.fill = '#f2f6ff';
     rect = polygon.getBoundingClientRect();
     group.translation.set(scene.width / 2 - rect.width / 2, scene.height / 2 - rect.height / 2);
