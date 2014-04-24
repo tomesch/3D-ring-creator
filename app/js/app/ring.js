@@ -116,7 +116,7 @@ define(['three'], function (THREE) {
       sections[i].applyMatrix(new THREE.Matrix4().makeRotationX(i * step));
     }
 
-    return drawRing(sections, 4);
+    return drawRing(sections, 12);
   };
   return Ring;
 });

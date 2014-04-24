@@ -8,11 +8,26 @@ html, body{
   height:100%;
   overflow:hidden;
 }
-#twojs-container, #threejs-container{
-  display:inline-block;
+#twojs-containers, #threejs-container{
+  float: left;
   width:50%;
   height:100%;
 }
-#twojs-container{
+#twojs-containers{
   border-right:1px solid #000;
+}
+#twojs-containers > div{
+  width: 50%;
+  height: 50%;
+  display: inline-block;
+}
+#twojs-containers *{
+  margin-bottom: -4px;
+}
+#twojs-containers > div:nth-child(2n+2){
+  margin-left: -4px;
+  border-left: 1px solid #000;
+}
+#twojs-containers > div:nth-child(1n+3){
+  border-top: 1px solid #000;
 }
