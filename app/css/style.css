@@ -33,8 +33,12 @@ html, body{
 }
 
 
-#inputfile-container {
+#inputfile-containers {
   position: fixed;
   top:20px;
   right: 20px;
+}
+
+.fileSelector {
+  display: block;
 }

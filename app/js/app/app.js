@@ -1,4 +1,4 @@
-define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, Selector) {
+define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector', 'filters'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, Selector, Filter) {
   'use strict';
   var app = {
     init: function () {
@@ -42,7 +42,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       i = 0,
       twoScene,
       sections = [],
-      fileselector = new Selector(document.getElementById('inputFile'));
+      fileselector = new Selector(document.getElementById('inputFile'), document.getElementById('imgCanvas'));
 
       scene.add(mesh);
 
@@ -65,7 +65,15 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       });
 
       window.addEventListener('filechange', function () {
-        var file = fileselector.getSelectedFile();
+        // Load the selected file
+        fileselector.getSelectedFile();
+      });
+
+      window.addEventListener('filereadcomplete', function () {
+        var filter = new Filter(fileselector.getInputData());
+
+        // Apply filter on the image
+        fileselector.setImageDataInContext(filter.setGrayScale());
       });
 
       function twoTothree(vertices) {
