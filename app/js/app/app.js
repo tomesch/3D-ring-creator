@@ -1,4 +1,4 @@
-define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector', 'filters'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, Selector, Filter) {
+define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector', 'filters', 'heightmap'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, Selector, Filter, Heightmap) {
   'use strict';
   var app = {
     init: function () {
@@ -70,10 +70,18 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       });
 
       window.addEventListener('filereadcomplete', function () {
-        var filter = new Filter(fileselector.getInputData());
+        var
+        filter = new Filter(fileselector.getInputData()),
+        imgData = filter.setGrayScale(),
+        heightmap = null,
+        arrHeightmap = null;
 
         // Apply filter on the image
-        fileselector.setImageDataInContext(filter.setGrayScale());
+        fileselector.setImageDataInContext(imgData);
+
+        // Create the heightmap scale 32
+        heightmap = new Heightmap(imgData);
+        arrHeightmap = heightmap.getHeightMap(32);
       });
 
       function twoTothree(vertices) {
