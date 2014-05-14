@@ -3,6 +3,7 @@ define(['three', 'threejs/container'], function (THREE, container) {
   var renderer = new THREE.WebGLRenderer({antialias: true});
   renderer.setSize(container.offsetWidth, container.offsetHeight);
   renderer.setClearColor(0xffffff, 1);
+
   container.appendChild(renderer.domElement);
   return renderer;
 });

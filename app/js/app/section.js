@@ -7,7 +7,6 @@ define(['two'], function (Two) {
     drag = function (e) {
       var x = (e.clientX - scene.renderer.domElement.offsetLeft) - offset.x,
       y = (e.clientY - scene.renderer.domElement.offsetTop) - offset.y;
-
       e.preventDefault();
       point.translation.set(x, y);
     },
@@ -17,7 +16,6 @@ define(['two'], function (Two) {
       window.removeEventListener('mouseup', dragEnd);
       window.dispatchEvent(sectionchange);
     };
-
     dom.addEventListener('mousedown', function (e) {
       e.preventDefault();
       window.addEventListener('mousemove', drag);
@@ -36,8 +34,8 @@ define(['two'], function (Two) {
     rect;
 
     anchors.push(new Two.Anchor(0, 0, 0, 0, 0, 0, Two.Commands.move));
-    anchors.push(new Two.Anchor(0, 50, 0, 50, 0, 50, Two.Commands.curve));
-    anchors.push(new Two.Anchor(50, 50, 50, 50, 50, 50, Two.Commands.curve));
+    anchors.push(new Two.Anchor(0, 50, -10, 50, 0, 70, Two.Commands.curve));
+    anchors.push(new Two.Anchor(50, 50, 50, 70, 60, 50, Two.Commands.curve));
     anchors.push(new Two.Anchor(50, 0, 50, 0, 50, 0, Two.Commands.curve));
 
     polygon = new Two.Polygon(anchors, true, true, true);
@@ -51,8 +49,8 @@ define(['two'], function (Two) {
 
       p = scene.makeCircle(0, 0, circleRadius);
       p.translation.copy(an);
-      p.noStroke().fill = editColor;
-    
+      p.noStroke().fill = '#F00';
+
       if (an.controls) {
         l = scene.makeCircle(0, 0, circleRadius);
         r = scene.makeCircle(0, 0, circleRadius);
@@ -60,8 +58,8 @@ define(['two'], function (Two) {
         l.translation.copy(an.controls.left);
         r.translation.copy(an.controls.right);
 
-        l.noStroke().fill = '#F00';
-        r.noStroke().fill = '#F00';
+        l.noStroke().fill = '#00F';
+        r.noStroke().fill = '#0F0';
 
         ll = new Two.Polygon([
           new Two.Anchor().copy(p.translation),
@@ -72,14 +70,22 @@ define(['two'], function (Two) {
           new Two.Anchor().copy(r.translation)
         ]);
 
-        rl.noFill().stroke = ll.noFill().stroke = '#F00';
+        rl.noFill().stroke = '#0F0';
+        ll.noFill().stroke = '#00F';
 
         group.add(p, l, r, rl, ll);
 
         p.translation.bind(Two.Events.change, function () {
+          var difx  = this.x - an.x,
+          dify = this.y - an.y;
+
           an.copy(this);
-          l.translation.copy(an.controls.left).addSelf(this);
-          r.translation.copy(an.controls.right).addSelf(this);
+          
+          l.translation.x += difx;
+          l.translation.y += dify;
+          r.translation.x += difx;
+          r.translation.y += dify;
+
           ll.vertices[0].copy(this);
           rl.vertices[0].copy(this);
           ll.vertices[1].copy(l.translation);
@@ -87,12 +93,12 @@ define(['two'], function (Two) {
         });
 
         l.translation.bind(Two.Events.change, function () {
-          an.controls.left.copy(this).subSelf(an);
+          an.controls.left.copy(this);
           ll.vertices[1].copy(this);
         });
 
         r.translation.bind(Two.Events.change, function () {
-          an.controls.right.copy(this).subSelf(an);
+          an.controls.right.copy(this);
           rl.vertices[1].copy(this);
         });
 

@@ -34,7 +34,7 @@ define(['three'], function (THREE) {
     // http://itc.ktu.lt/itc354/Riskus354.pdf
     // http://hansmuller-flex.blogspot.de/2011/04/approximating-circular-arc-with-cubic.html
     tangentCoef = kappa * Math.tan(curveAngle / 2);
-    if (p3AngletoY === 0 && p0AngletoY >= Math.PI || p0AngletoY < p3AngletoY) {
+    if (Math.round(p3AngletoY) === 0 && p0AngletoY >= Math.PI || p0AngletoY < p3AngletoY) {
       p1.z += p1.y * tangentCoef;
       p2.z -= p2.y * tangentCoef;
     }
@@ -107,16 +107,17 @@ define(['three'], function (THREE) {
   Ring.prototype.getGeometry = function () {
     var sections = [],
     step = (2 * Math.PI) / this.getSections().length,
-    i;
+    i,
+    debugGeometry = new THREE.Geometry();
 
     for (i = 0; i < this.getSections().length; i++) {
       sections[i] = new THREE.Geometry();
       sections[i].vertices = sections[i].vertices.concat(this._sections[i]);
       sections[i].applyMatrix(new THREE.Matrix4().makeTranslation(0, this.getRadius(), 0));
       sections[i].applyMatrix(new THREE.Matrix4().makeRotationX(i * step));
+      debugGeometry.vertices = debugGeometry.vertices.concat(sections[i].vertices);
     }
-
-    return drawRing(sections, 12);
+    return drawRing(sections, 20);
   };
   return Ring;
 });

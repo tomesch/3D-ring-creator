@@ -2,49 +2,14 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
   'use strict';
   var app = {
     init: function () {
-      var test = [[
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(0, 5, 0),
-        new THREE.Vector3(2.5, 5, 0),
-        new THREE.Vector3(5, 5, 0),
-        new THREE.Vector3(5, 0, 0),
-        new THREE.Vector3(0, 0, 0)
-      ],
-      [
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(0, 5, 0),
-        new THREE.Vector3(2.5, 5, 0),
-        new THREE.Vector3(5, 5, 0),
-        new THREE.Vector3(5, 0, 0),
-        new THREE.Vector3(0, 0, 0)
-      ],
-      [
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(0, 5, 0),
-        new THREE.Vector3(2.5, 5, 0),
-        new THREE.Vector3(5, 5, 0),
-        new THREE.Vector3(5, 0, 0),
-        new THREE.Vector3(0, 0, 0)
-      ],
-      [
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(0, 5, 0),
-        new THREE.Vector3(2.5, 5, 0),
-        new THREE.Vector3(5, 5, 0),
-        new THREE.Vector3(5, 0, 0),
-        new THREE.Vector3(0, 0, 0)
-      ]
-      ],
-      ring = new Ring(test, 10),
-      mesh = new THREE.Mesh(ring.getGeometry(), material.wire),
+      var ring,
+      mesh,
       twoContainers = document.getElementsByClassName('twojs-container'),
       twoScenes = [],
       i = 0,
       twoScene,
       sections = [],
       fileselector = new Selector(document.getElementById('inputFile'), document.getElementById('imgCanvas'));
-
-      scene.add(mesh);
 
       for (i; i < twoContainers.length; i += 1) {
         twoScene = new TwoScene(twoContainers[i]);
@@ -53,16 +18,11 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         twoScene.update();
       }
 
+      mesh = this.updateRing(sections);
+
       window.addEventListener('sectionchange', function () {
-        var scts = [];
-        sections.forEach(function (val) {
-          scts.push(twoTothree(val.vertices));
-        });
-        ring = new Ring(scts, 10);
-        scene.remove(mesh);
-        mesh = new THREE.Mesh(ring.getGeometry(), material.wire);
-        scene.add(mesh);
-      });
+        this.updateRing(sections);
+      }.bind(this));
 
       window.addEventListener('filechange', function () {
         // Load the selected file
@@ -83,16 +43,54 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         heightmap = new Heightmap(imgData);
         arrHeightmap = heightmap.getHeightMap(32);
       });
-
+    },
+    updateRing: function (sections, mesh) {
       function twoTothree(vertices) {
-        var pts = [];
-        vertices.forEach(function (val) {
-          pts.push(new THREE.Vector3(val.x / 10, val.y / 10, 0));
-        });
-        pts.push(new THREE.Vector3(vertices[0].x / 10, vertices[0].y / 10, 0));
+        var pts = [],
+        i = 0,
+        p0,
+        p0three,
+        p1three,
+        p2three,
+        p3,
+        p3three,
+        curve;
+
+        for (i; i < vertices.length; i++) {
+          p0 = vertices[i];
+          p0three = new THREE.Vector3(p0.x / 10, p0.y / 10, 0);
+          p3 = vertices[(i + 1) % vertices.length];
+          p3three = new THREE.Vector3(p3.x / 10, p3.y / 10, 0);
+
+          p1three = new THREE.Vector3(p0.controls.right.x / 10, p0.controls.right.y / 10, 0);
+          p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
+
+          curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
+          pts = pts.concat(curve.getPoints(20));
+        }
+
         return pts;
       }
+      var scts = [],
+      ring;
+      sections.forEach(function (val) {
+        scts.push(twoTothree(val.vertices));
+      });
+      ring = new Ring(scts, 10);
+      mesh = new THREE.Mesh(ring.getGeometry(), material.wire);
+      //mesh = new THREE.Line(ring.getGeometry(), material.line);
 
+      this.clearScene();
+      scene.add(mesh);
+    },
+    clearScene: function () {
+      var obj, i;
+      for (i = scene.children.length - 1; i >= 0 ; i --) {
+        obj = scene.children[i];
+        if (obj !== camera) {
+          scene.remove(obj);
+        }
+      }
     },
     animate: function () {
       window.requestAnimationFrame(app.animate);
@@ -101,7 +99,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
     },
     dev: function () {
       var axisHelper = new THREE.AxisHelper(100),
-      gridHelper = new THREE.GridHelper(100, 10);
+      gridHelper = new THREE.GridHelper(100, 50);
       scene.add(axisHelper);
       scene.add(gridHelper);
     }
