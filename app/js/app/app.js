@@ -1,4 +1,4 @@
-define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector', 'filters', 'heightmap'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, Selector, Filter, Heightmap) {
+define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector', 'filters', 'heightmap', 'gui'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, Selector, Filter, Heightmap, gui) {
   'use strict';
   var app = {
     init: function () {
@@ -11,6 +11,8 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       sections = [],
       fileselector = new Selector(document.getElementById('inputFile'), document.getElementById('imgCanvas'));
 
+      gui.init();
+
       for (i; i < twoContainers.length; i += 1) {
         twoScene = new TwoScene(twoContainers[i]);
         twoScenes.push(twoScene);
@@ -18,10 +20,15 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         twoScene.update();
       }
 
-      mesh = this.updateRing(sections);
+      mesh = this.updateRing(sections, gui.param.circumference);
 
       window.addEventListener('sectionchange', function () {
-        this.updateRing(sections);
+        this.updateRing(sections, gui.param.circumference);
+      }.bind(this));
+
+      window.addEventListener('circumferencechange', function () {
+        console.log(gui);
+        this.updateRing(sections, gui.param.circumference);
       }.bind(this));
 
       window.addEventListener('filechange', function () {
@@ -44,7 +51,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         arrHeightmap = heightmap.getHeightMap(32);
       });
     },
-    updateRing: function (sections, mesh) {
+    updateRing: function (sections, circumference) {
       function twoTothree(vertices) {
         var pts = [],
         i = 0,
@@ -72,11 +79,12 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         return pts;
       }
       var scts = [],
-      ring;
+      radius = circumference / (Math.PI * 2),
+      ring, mesh;
       sections.forEach(function (val) {
         scts.push(twoTothree(val.vertices));
       });
-      ring = new Ring(scts, 10);
+      ring = new Ring(scts, radius);
       mesh = new THREE.Mesh(ring.getGeometry(), material.wire);
       //mesh = new THREE.Line(ring.getGeometry(), material.line);
 

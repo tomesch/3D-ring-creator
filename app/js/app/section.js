@@ -28,7 +28,6 @@ define(['two'], function (Two) {
     group = scene.makeGroup(),
     i = 0,
     circleRadius = 4,
-    editColor = 'rgb(79, 128, 255)',
     polygon,
     resize,
     rect;
@@ -80,7 +79,7 @@ define(['two'], function (Two) {
           dify = this.y - an.y;
 
           an.copy(this);
-          
+
           l.translation.x += difx;
           l.translation.y += dify;
           r.translation.x += difx;
