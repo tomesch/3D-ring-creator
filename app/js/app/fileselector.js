@@ -32,9 +32,11 @@ define(function () {
         reader.onload = function (e) {
             image.src = e.target.result;
 
-            parent._canvas.setAttribute('width', image.width);
-            parent._canvas.setAttribute('height', image.height);
-            context.drawImage(image, 0, 0);
+            //Performance issues for images bigger than 500*500 so we resize if ours is that big
+            parent.resizeImageTooBig(image, 200, 200);
+
+            context.drawImage(image, 0, 0, parent._canvas.width, parent._canvas.height);
+
             parent._inputData = context.getImageData(0, 0, image.width, image.height);
 
             window.dispatchEvent(filereadcomplete);
@@ -47,10 +49,28 @@ define(function () {
       var context = this._canvas.getContext('2d');
       context.putImageData(imageData, 0, 0, 0, 0, imageData.width, imageData.height);
     };
-    
+
   Selector.prototype.getInputData = function () {
       return this._inputData;
     };
+
+  Selector.prototype.resizeImageTooBig = function (image, MAX_WIDTH, MAX_HEIGHT) {
+    var
+    width = image.width,
+    height = image.height;
+
+    if (width > MAX_WIDTH) {
+      height = Math.floor(height * MAX_WIDTH / width);
+      width = MAX_WIDTH;
+    }
+    if (height > MAX_HEIGHT) {
+      width = Math.floor(width * MAX_HEIGHT / height);
+      height = MAX_HEIGHT;
+    }
+
+    this._canvas.setAttribute('width', width);
+    this._canvas.setAttribute('height', height);
+  };
 
   return Selector;
 });
