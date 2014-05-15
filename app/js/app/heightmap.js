@@ -6,7 +6,7 @@ define(function () {
 
   Heightmap.prototype.getHeightMap = function (scale) {
     var
-    size =  this._imageData.Height * this._imageData.Width,
+    size =  this._imageData.height * this._imageData.width,
     res = new Float32Array(size),
     data = this._imageData.data,
     i = 0,
