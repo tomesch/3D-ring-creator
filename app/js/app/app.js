@@ -1,4 +1,4 @@
-define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector', 'filters', 'heightmap', 'gui'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, Selector, Filter, Heightmap, gui) {
+define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector', 'filters', 'heightmap', 'constraints', 'gui'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, Selector, Filter, Heightmap, Constraint, gui) {
   'use strict';
   var app = {
     init: function () {
@@ -41,14 +41,22 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         filter = new Filter(fileselector.getInputData()),
         imgData = filter.setGrayScale(),
         heightmap = null,
-        arrHeightmap = null;
+        arrHeightmap = null,
+        constraint = new Constraint();
 
         // Apply filter on the image
         fileselector.setImageDataInContext(imgData);
 
         // Create the heightmap scale 32
         heightmap = new Heightmap(imgData);
-        arrHeightmap = heightmap.getHeightMap(32);
+        arrHeightmap = heightmap.getHeightMap(3 * 255);
+        alert('Checking if heightmap is valid...');
+        if (constraint.isHeightmapValid(arrHeightmap, imgData.width, 1000)) {
+          alert('Heightmap is valid');
+        }
+        else {
+          alert('Heightmap is not valid');
+        }
       });
     },
     updateRing: function (sections, circumference) {
