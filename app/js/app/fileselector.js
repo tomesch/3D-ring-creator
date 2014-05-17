@@ -4,8 +4,16 @@ define(function () {
   filechange = new Event('filechange'),
   filereadcomplete = new Event('filereadcomplete'),
   Selector = function (inputElement, canvasElement) {
-    this._input = inputElement;
-    this._canvas = canvasElement;
+
+    this._input = document.createElement('input');
+    this._input.setAttribute('type', 'file');
+    this._input.style.display = 'none';
+    document.body.appendChild(this._input);
+
+    this._canvas = document.createElement('canvas');
+    this._canvas.style.display = 'none';
+    document.body.appendChild(this._canvas);
+
     this._inputData = null;
 
     // Check changement in
@@ -15,9 +23,12 @@ define(function () {
     }, true);
   };
 
+  Selector.prototype.select = function select() {
+    this._input.click();
+  };
+
   Selector.prototype.getSelectedFile = function () {
-        var
-        src = this._input.files[0],
+        var src = this._input.files[0],
         reader = new FileReader(),
         image = new Image(),
         context = this._canvas.getContext('2d'),
@@ -55,8 +66,7 @@ define(function () {
     };
 
   Selector.prototype.resizeImageTooBig = function (image, MAX_WIDTH, MAX_HEIGHT) {
-    var
-    width = image.width,
+    var width = image.width,
     height = image.height;
 
     if (width > MAX_WIDTH) {
@@ -72,5 +82,5 @@ define(function () {
     this._canvas.setAttribute('height', height);
   };
 
-  return Selector;
+  return new Selector();
 });

@@ -1,63 +1,74 @@
-define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector', 'filters', 'heightmap', 'constraints', 'gui'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, Selector, Filter, Heightmap, Constraint, gui) {
+define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector', 'filters', 'heightmap', 'constraints', 'gui'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, selector, Filter, Heightmap, Constraint, gui) {
   'use strict';
   var app = {
+    mesh: null,
+    sections: [],
     init: function () {
-      var ring,
-      mesh,
-      twoContainers = document.getElementsByClassName('twojs-container'),
+      var twoContainers = document.getElementsByClassName('twojs-container'),
       twoScenes = [],
       i = 0,
-      twoScene,
-      sections = [],
-      fileselector = new Selector(document.getElementById('inputFile'), document.getElementById('imgCanvas'));
+      twoScene;
 
-      gui.init();
-
+      this.handleEvents(function () {
+        gui.init();
+      });
+      
       for (i; i < twoContainers.length; i += 1) {
         twoScene = new TwoScene(twoContainers[i]);
         twoScenes.push(twoScene);
-        sections.push(section(twoScene));
+        this.sections.push(section(twoScene));
         twoScene.update();
       }
 
-      mesh = this.updateRing(sections, gui.param.circumference);
+      this.updateRing(this.sections, gui.param.circumference);
+    },
+    handleEvents: function (next) {
+      window.addEventListener('import', function () {
+        selector.select();
+      }.bind(this));
+
+      window.addEventListener('export', function () {
+        exporters.obj(this.mesh.geometry);
+      }.bind(this));
 
       window.addEventListener('sectionchange', function () {
-        this.updateRing(sections, gui.param.circumference);
+        this.updateRing(this.sections, gui.param.circumference);
       }.bind(this));
 
       window.addEventListener('circumferencechange', function () {
-        console.log(gui);
-        this.updateRing(sections, gui.param.circumference);
+        this.updateRing(this.sections, gui.param.circumference);
       }.bind(this));
 
       window.addEventListener('filechange', function () {
-        // Load the selected file
-        fileselector.getSelectedFile();
-      });
+        selector.getSelectedFile();
+      }.bind(this));
 
       window.addEventListener('filereadcomplete', function () {
         var
-        filter = new Filter(fileselector.getInputData()),
+        filter = new Filter(selector.getInputData()),
         imgData = filter.setGrayScale(),
         heightmap = null,
         arrHeightmap = null,
         constraint = new Constraint();
 
         // Apply filter on the image
-        fileselector.setImageDataInContext(imgData);
+        selector.setImageDataInContext(imgData);
 
         // Create the heightmap scale 32
         heightmap = new Heightmap(imgData);
         arrHeightmap = heightmap.getHeightMap(3 * 255);
-        alert('Checking if heightmap is valid...');
+        /*alert('Checking if heightmap is valid...');
         if (constraint.isHeightmapValid(arrHeightmap, imgData.width, 1000)) {
           alert('Heightmap is valid');
         }
         else {
           alert('Heightmap is not valid');
-        }
-      });
+        }*/
+      }.bind(this));
+
+      if (next) {
+        next();
+      }
     },
     updateRing: function (sections, circumference) {
       function twoTothree(vertices) {
@@ -81,7 +92,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
           p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
 
           curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
-          pts = pts.concat(curve.getPoints(20));
+          pts = pts.concat(curve.getPoints(30));
         }
 
         return pts;
@@ -89,24 +100,20 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       var scts = [],
       radius = circumference / (Math.PI * 2),
       ring, mesh;
-      sections.forEach(function (val) {
+      
+      this.sections.forEach(function (val) {
         scts.push(twoTothree(val.vertices));
       });
+
       ring = new Ring(scts, radius);
       mesh = new THREE.Mesh(ring.getGeometry(), material.wire);
       //mesh = new THREE.Line(ring.getGeometry(), material.line);
 
-      this.clearScene();
+      scene.remove(this.mesh);
       scene.add(mesh);
-    },
-    clearScene: function () {
-      var obj, i;
-      for (i = scene.children.length - 1; i >= 0 ; i --) {
-        obj = scene.children[i];
-        if (obj !== camera) {
-          scene.remove(obj);
-        }
-      }
+      this.mesh = mesh;
+
+      return mesh;
     },
     animate: function () {
       window.requestAnimationFrame(app.animate);

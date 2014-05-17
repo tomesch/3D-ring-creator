@@ -117,7 +117,7 @@ define(['three'], function (THREE) {
       sections[i].applyMatrix(new THREE.Matrix4().makeRotationX(i * step));
       debugGeometry.vertices = debugGeometry.vertices.concat(sections[i].vertices);
     }
-    return drawRing(sections, 20);
+    return drawRing(sections, 30);
   };
   return Ring;
 });
