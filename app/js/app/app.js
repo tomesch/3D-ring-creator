@@ -3,33 +3,24 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
   var app = {
     mesh: null,
     sections: [],
-    ringWorker: new Worker('js/app/ring_worker.js'),
     init: function () {
       var twoContainers = document.getElementsByClassName('twojs-container'),
       twoScenes = [],
       i = 0,
-      twoScene, workerHandle;
+      twoScene;
+
+      this.handleEvents(function () {
+        gui.init();
+      });
       
-      workerHandle = function (msg) {
-        this.ringWorker.removeEventListener('message', workerHandle, false);
-        console.log(msg.data);
+      for (i; i < twoContainers.length; i += 1) {
+        twoScene = new TwoScene(twoContainers[i]);
+        twoScenes.push(twoScene);
+        this.sections.push(section(twoScene));
+        twoScene.update();
+      }
 
-        this.handleEvents(function () {
-          gui.init();
-        });
-        
-        for (i; i < twoContainers.length; i += 1) {
-          twoScene = new TwoScene(twoContainers[i]);
-          twoScenes.push(twoScene);
-          this.sections.push(section(twoScene));
-          twoScene.update();
-        }
-
-        this.updateRing(this.sections, gui.param.circumference);
-      }.bind(this);
-
-      this.ringWorker.addEventListener('message', workerHandle, false);
-
+      this.updateRing(this.sections, gui.param.circumference);
     },
     handleEvents: function (next) {
       window.addEventListener('import', function () {
@@ -114,43 +105,6 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       scene.remove(this.mesh);
       scene.add(mesh);
       this.mesh = mesh;
-
-      // Web worker experiment
-      /*workerHandle = function (msg) {
-        var geometry = new THREE.Geometry(),
-        data = JSON.parse(msg.data),
-        i;
-        
-        this.ringWorker.removeEventListener('message', workerHandle, false);
-
-        for (i = 0; i < data.vertices.length; i++){
-          geometry.vertices.push(
-            new THREE.Vector3(
-              data.vertices[i].x,
-              data.vertices[i].y,
-              data.vertices[i].z
-            )
-          );
-        }
-        for (i = 0; i < data.faces.length; i++){
-          geometry.faces.push(
-            new THREE.Face3(
-              data.faces[i].a,
-              data.faces[i].b,
-              data.faces[i].c
-            )
-          );
-        }
-
-        mesh = new THREE.Mesh(geometry, material.wire);
-        
-        scene.remove(this.mesh);
-        scene.add(mesh);
-        this.mesh = mesh;
-      }.bind(this);
-
-      this.ringWorker.addEventListener('message', workerHandle, false);
-      this.ringWorker.postMessage(JSON.stringify({sections: scts, radius: radius}));*/
     },
     animate: function () {
       window.requestAnimationFrame(app.animate);

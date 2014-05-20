@@ -1,7 +1,6 @@
 define(function () {
   'use strict';
-  var
-  filechange = new Event('filechange'),
+  var filechange = new Event('filechange'),
   filereadcomplete = new Event('filereadcomplete'),
   Selector = function (inputElement, canvasElement) {
 
