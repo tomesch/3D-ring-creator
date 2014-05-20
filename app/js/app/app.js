@@ -58,12 +58,18 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         arrHeightmap = heightmap.getHeightMap(3 * 255);
 
         worker.onmessage = function (e) {
-          alert('Heightmap is ' + (e.data ? '' : 'not ') + 'valid');
+          //Send request
+          if (e.data === 'Ready') {
+            worker.postMessage({ heightmap: arrHeightmap, width: imgData.width, maxSlope: 500});
+          }
+          //Receive result
+          else {
+            alert('Heightmap is ' + (e.data ? '' : 'not ') + 'valid');
+          }
         };
+        //Initialize the worker
+        worker.postMessage('');
 
-        setTimeout(function () {
-          worker.postMessage({ heightmap: arrHeightmap, width: imgData.width, maxSlope: 500});
-        }, 1000);
 
       }.bind(this));
 
