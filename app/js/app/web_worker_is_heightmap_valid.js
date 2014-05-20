@@ -23,6 +23,7 @@ require(['constraints'], function (Constraint) {
   var
   res = false,
   constraint = new Constraint();
+  self.postMessage('Ready');
 
   self.onmessage = function (e) {
     res = constraint.isHeightmapValid(e.data.heightmap, e.data.width, e.data.maxSlope);
