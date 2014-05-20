@@ -73,7 +73,7 @@ define(['three'], function (THREE) {
 
         for (x = pts.length - 1; x > 0; x -= 1) {
           geometry.faces.push(new THREE.Face3(offset + x, offset + x + pts.length, offset + x + pts.length - 1));
-          geometry.faces.push(new THREE.Face3(offset + x, offset + x - 1, offset + x + pts.length - 1));
+          geometry.faces.push(new THREE.Face3(offset + x - 1, offset + x, offset + x + pts.length - 1));
         }
         offset += pts.length * 2;
       }

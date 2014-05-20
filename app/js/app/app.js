@@ -100,7 +100,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       });
 
       ring = new Ring(scts, radius);
-      mesh = new THREE.Mesh(ring.getGeometry(), material.wire);
+      mesh = new THREE.Mesh(ring.getGeometry(), material.solid);
 
       scene.remove(this.mesh);
       scene.add(mesh);

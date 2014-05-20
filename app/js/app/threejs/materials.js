@@ -3,8 +3,7 @@ define(['three'], function (THREE) {
   return {
     solid: new THREE.MeshLambertMaterial({
       color: 0x000000,
-      ambient: 0x000000,
-      side: THREE.DoubleSide
+      ambient: 0x000000
     }),
     shiny: new THREE.MeshPhongMaterial({
       color: 0x000000,
