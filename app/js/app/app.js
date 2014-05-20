@@ -44,8 +44,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       }.bind(this));
 
       window.addEventListener('filereadcomplete', function () {
-        var
-        filter = new Filter(selector.getInputData()),
+        var filter = new Filter(selector.getInputData()),
         imgData = filter.setGrayScale(),
         heightmap = null,
         arrHeightmap = null,
@@ -76,13 +75,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       function twoTothree(vertices) {
         var pts = [],
         i = 0,
-        p0,
-        p0three,
-        p1three,
-        p2three,
-        p3,
-        p3three,
-        curve;
+        p0, p0three, p1three, p2three, p3, p3three, curve;
 
         for (i; i < vertices.length; i++) {
           p0 = vertices[i];
@@ -101,7 +94,8 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       }
       var scts = [],
       radius = circumference / (Math.PI * 2),
-      ring, mesh;
+
+      ring, mesh, workerHandle;
 
       this.sections.forEach(function (val) {
         scts.push(twoTothree(val.vertices));
@@ -109,13 +103,10 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
 
       ring = new Ring(scts, radius);
       mesh = new THREE.Mesh(ring.getGeometry(), material.wire);
-      //mesh = new THREE.Line(ring.getGeometry(), material.line);
 
       scene.remove(this.mesh);
       scene.add(mesh);
       this.mesh = mesh;
-
-      return mesh;
     },
     animate: function () {
       window.requestAnimationFrame(app.animate);

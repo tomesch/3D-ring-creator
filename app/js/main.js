@@ -1,12 +1,14 @@
 require.config({
   baseUrl: 'js/app',
   shim: {
+    'FileSaver': {exports: 'FileSaver'},
     'dat': {exports: 'dat'},
     'threeCore': {exports: 'THREE'},
     'OrbitControls': {deps: ['threeCore'], exports: 'THREE'},
     'OBJExporter': {deps: ['threeCore'], exports: 'THREE'}
   },
   paths: {
+    FileSaver: '../lib/FileSaver/FileSaver',
     three: '../lib/three',
     threeCore: '../lib/threejs/build/three',
     dat: '../lib/dat-gui/build/dat.gui',
@@ -19,6 +21,6 @@ require.config({
 require(['app'], function (app) {
   'use strict';
   app.init();
-  //app.dev();
+  app.dev();
   app.animate();
 });

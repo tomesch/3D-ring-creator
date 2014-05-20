@@ -5,12 +5,9 @@ define(['three'], function (THREE) {
     var kappa = 0.551915024494,
     p1 = p0.clone(),
     p2 = p3.clone(),
-    p0AngletoY,
-    p3AngletoY,
-    curveAngle,
-    tangentCoef,
     matrix = new THREE.Matrix4(),
-    yAxis = new THREE.Vector3(0, 1, 0);
+    yAxis = new THREE.Vector3(0, 1, 0),
+    p0AngletoY, p3AngletoY, curveAngle, tangentCoef;
 
     // Translate both points into the Y axis so we can mesure the angle to X
     p1.applyMatrix4(matrix.makeTranslation(- p0.x, 0, 0));
@@ -54,16 +51,9 @@ define(['three'], function (THREE) {
     var offset = 0,
     i = 0,
     y = 0,
-    from,
-    to,
-    from2,
-    to2,
-    spline,
-    spline2,
-    pts,
-    pts2,
-    x,
-    geometry = new THREE.Geometry();
+    geometry = new THREE.Geometry(),
+    from, to, from2, to2, spline, spline2, pts, pts2, x;
+    
 
     for (i = 0; i < sections.length; i++) {
       for (y = 0; y < sections[i].vertices.length - 1; y += 1) {

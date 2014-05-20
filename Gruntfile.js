@@ -30,7 +30,7 @@ module.exports = function(grunt) {
         undef: true,
         devel: true,
         browser: true,
-        predef: ['require', 'define', 'Event', 'importScripts', 'self'],
+        predef: ['require', 'define', 'Event', 'importScripts', 'self', 'saveAs'],
         curly: true,
         eqeqeq: true,
         indent: 2,

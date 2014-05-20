@@ -1,10 +1,10 @@
-define(['three'], function (THREE) {
+define(['three', 'FileSaver'], function (THREE, FileSaver) {
   'use strict';
   var download = function (data) {
-    var pom = document.createElement('a');
-    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
-    pom.setAttribute('download', 'ring.obj');
-    pom.click();
+    saveAs(
+      new Blob([data], {type: 'text/plain;charset=utf-8'}),
+      'ring.obj'
+    );
   },
   exporter = {
     obj: function (geometry) {
