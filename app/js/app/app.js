@@ -20,7 +20,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         twoScene.update();
       }
 
-      this.updateRing(this.sections, gui.param.circumference);
+      this.createRing(this.sections, gui.param.circumference);
     },
     handleEvents: function (next) {
       window.addEventListener('import', function () {
@@ -70,6 +70,40 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         next();
       }
     },
+    createRing: function (sections, circumference) {
+      function twoTothree(vertices) {
+        var pts = [],
+        i = 0,
+        p0, p0three, p1three, p2three, p3, p3three, curve;
+
+        for (i; i < vertices.length; i++) {
+          p0 = vertices[i];
+          p0three = new THREE.Vector3(p0.x / 10, p0.y / 10, 0);
+          p3 = vertices[(i + 1) % vertices.length];
+          p3three = new THREE.Vector3(p3.x / 10, p3.y / 10, 0);
+
+          p1three = new THREE.Vector3(p0.controls.right.x / 10, p0.controls.right.y / 10, 0);
+          p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
+
+          curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
+          pts = pts.concat(curve.getPoints(30));
+        }
+
+        return pts;
+      }
+      var scts = [],
+      radius = circumference / (Math.PI * 2),
+      ring;
+      
+      this.sections.forEach(function (val) {
+        scts.push(twoTothree(val.vertices));
+      });
+
+      ring = new Ring(scts, radius);
+
+      this.mesh = new THREE.Mesh(ring.getGeometry(), material.solid);
+      scene.add(this.mesh);
+    },
     updateRing: function (sections, circumference) {
       function twoTothree(vertices) {
         var pts = [],
@@ -93,18 +127,16 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       }
       var scts = [],
       radius = circumference / (Math.PI * 2),
-      ring, mesh, workerHandle;
+      ring;
       
       this.sections.forEach(function (val) {
         scts.push(twoTothree(val.vertices));
       });
 
       ring = new Ring(scts, radius);
-      mesh = new THREE.Mesh(ring.getGeometry(), material.solid);
-
-      scene.remove(this.mesh);
-      scene.add(mesh);
-      this.mesh = mesh;
+      this.mesh.geometry.dynamic = true;
+      this.mesh.geometry.vertices = ring.getGeometry().vertices;
+      this.mesh.geometry.verticesNeedUpdate = true;
     },
     animate: function () {
       window.requestAnimationFrame(app.animate);
