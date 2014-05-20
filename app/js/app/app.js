@@ -12,7 +12,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       this.handleEvents(function () {
         gui.init();
       });
-      
+
       for (i; i < twoContainers.length; i += 1) {
         twoScene = new TwoScene(twoContainers[i]);
         twoScenes.push(twoScene);
@@ -48,22 +48,23 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         imgData = filter.setGrayScale(),
         heightmap = null,
         arrHeightmap = null,
-        constraint = new Constraint();
+        worker = new Worker('js/app/web_worker_is_heightmap_valid.js');
 
         // Apply filter on the image
         selector.setImageDataInContext(imgData);
 
-        // Create the heightmap scale 32
+        // Create the heightmap
         heightmap = new Heightmap(imgData);
         arrHeightmap = heightmap.getHeightMap(3 * 255);
-        console.log(arrHeightmap);
-        /*alert('Checking if heightmap is valid...');
-        if (constraint.isHeightmapValid(arrHeightmap, imgData.width, 1000)) {
-          alert('Heightmap is valid');
-        }
-        else {
-          alert('Heightmap is not valid');
-        }*/
+
+        worker.onmessage = function (e) {
+          alert('Heightmap is ' + (e.data ? '' : 'not ') + 'valid');
+        };
+
+        setTimeout(function () {
+          worker.postMessage({ heightmap: arrHeightmap, width: imgData.width, maxSlope: 500});
+        }, 1000);
+
       }.bind(this));
 
       if (next) {
