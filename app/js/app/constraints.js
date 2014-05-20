@@ -4,12 +4,17 @@ define(function () {
   };
 
   Constraint.prototype.isHeightmapValid = function (heightmap, width, MAX_SLOPE) {
+    return this.getMaxSlopeSquared(heightmap, width) < MAX_SLOPE * MAX_SLOPE;
+  };
+
+  Constraint.prototype.getMaxSlopeSquared = function (heightmap, width) {
     //Performs an all pairs of points the following test:
     //If the slope ('pente') of the line between any pair of 2 points
     //is higher than our max value, we return false
     //So it makes (n^2 - n) / 2 tests (worst case) where n is the number of points
     var
     slope = 0.0,
+    maxSlope = 0.0,
     i = 0,
     j = 0,
     iCoord = [],
@@ -47,12 +52,12 @@ define(function () {
         //Vector's norm squared
         slope = vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2];
 
-        if (slope > MAX_SLOPE * MAX_SLOPE) {
-          return false;
+        if (slope > maxSlope) {
+          maxSlope = slope;
         }
       }
     }
-    return true;
+    return maxSlope;
   };
 
   return Constraint;
