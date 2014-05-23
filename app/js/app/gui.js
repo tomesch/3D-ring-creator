@@ -23,6 +23,7 @@ define(['dat'], function (dat) {
     });
     this.gui.add(this.param, 'image').name('Import image');
     this.gui.add(this.param, 'export').name('Export as OBJ');
+
   };
 
   return new Gui();

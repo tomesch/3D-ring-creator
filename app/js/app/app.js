@@ -1,4 +1,4 @@
-define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector', 'filters', 'heightmap', 'constraints', 'gui'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, selector, Filter, Heightmap, Constraint, gui) {
+define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector', 'filters', 'heightmap', 'constraints', 'gui', 'threejs/lights'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, selector, Filter, Heightmap, Constraint, gui, lights) {
   'use strict';
   var app = {
     mesh: null,
@@ -11,18 +11,27 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
 
       this.handleEvents(function () {
         gui.init();
-      });
 
-      for (i; i < twoContainers.length; i += 1) {
-        twoScene = new TwoScene(twoContainers[i]);
-        twoScenes.push(twoScene);
-        this.sections.push(section(twoScene));
-        twoScene.update();
-      }
+        for (i; i < twoContainers.length; i += 1) {
+          twoScene = new TwoScene(twoContainers[i]);
+          twoScenes.push(twoScene);
+          this.sections.push(section(twoScene));
+          twoScene.update();
+        }
 
-      this.createRing(this.sections, gui.param.circumference);
+        // Add point light to the scene
+        scene.add(lights.point);
+
+        // Create the ring
+        this.createRing(this.sections, gui.param.circumference);
+
+      }.bind(this));
     },
     handleEvents: function (next) {
+      controls.orbit.addEventListener('change', function () {
+        this.render();
+      }.bind(this));
+
       window.addEventListener('import', function () {
         selector.select();
       }.bind(this));
@@ -68,9 +77,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
           }
         };
         //Initialize the worker
-        worker.postMessage('');
-
-
+        worker.postMessage();
       }.bind(this));
 
       if (next) {
@@ -93,9 +100,8 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
           p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
 
           curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
-          pts = pts.concat(curve.getPoints(30));
+          pts = pts.concat(curve.getPoints(50));
         }
-
         return pts;
       }
       var scts = [],
@@ -106,10 +112,15 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         scts.push(twoTothree(val.vertices));
       });
 
-      ring = new Ring(scts, radius);
+      ring = new Ring(scts, radius, 50);
+      ring.applyHeightmap([]);
 
-      this.mesh = new THREE.Mesh(ring.getGeometry(), material.solid);
+      this.mesh = new THREE.Mesh(ring.geometry, material.shiny);
+      this.mesh.geometry.computeCentroids();
+      this.mesh.geometry.computeFaceNormals();
       scene.add(this.mesh);
+
+      controls.orbit.update();
     },
     updateRing: function (sections, circumference) {
       function twoTothree(vertices) {
@@ -127,7 +138,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
           p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
 
           curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
-          pts = pts.concat(curve.getPoints(30));
+          pts = pts.concat(curve.getPoints(50));
         }
 
         return pts;
@@ -140,14 +151,18 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         scts.push(twoTothree(val.vertices));
       });
 
-      ring = new Ring(scts, radius);
-      this.mesh.geometry.dynamic = true;
-      this.mesh.geometry.vertices = ring.getGeometry().vertices;
+      ring = new Ring(scts, radius, 50);
+      ring.applyHeightmap([]);
+      this.mesh.geometry.vertices = ring.geometry.vertices;
+      this.mesh.geometry.computeCentroids();
+      this.mesh.geometry.computeFaceNormals();
       this.mesh.geometry.verticesNeedUpdate = true;
-    },
-    animate: function () {
-      window.requestAnimationFrame(app.animate);
+      this.mesh.geometry.normalsNeedUpdate = true;
+      console.log(ring.topVertices);
       controls.orbit.update();
+    },
+    render: function () {
+      lights.point.position = camera.position;
       renderer.render(scene, camera);
     },
     dev: function () {

@@ -178,7 +178,7 @@ define(['two'], function (Two) {
       }
       i++;
     });
-
+    //group.rotation = Math.PI;
     return polygon;
   };
 });
