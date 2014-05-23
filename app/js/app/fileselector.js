@@ -9,9 +9,7 @@ define(function () {
     this._input.style.display = 'none';
     document.body.appendChild(this._input);
 
-    this._canvas = document.createElement('canvas');
-    this._canvas.style.display = 'none';
-    document.body.appendChild(this._canvas);
+    this._canvas = document.getElementById('canvas');
 
     this._inputData = null;
 
@@ -52,6 +50,7 @@ define(function () {
             window.dispatchEvent(filereadcomplete);
           };
         reader.readAsDataURL(this._input.files[0]);
+
         return src;
       };
 

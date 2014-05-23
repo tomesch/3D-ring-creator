@@ -1,5 +1,5 @@
 *{
-  box-sizing:border-box; 
+  box-sizing:border-box;
 }
 html, body{
   margin:0;
@@ -30,4 +30,35 @@ html, body{
 }
 #twojs-containers > div:nth-child(1n+3){
   border-top: 1px solid #000;
+}
+
+.backgroundModal {
+  background-color: rgba(0, 0, 0, 0.6);
+  bottom: 0;
+  cursor: default;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  visibility: visible;
+  z-index: 1;
+  opacity: 1;
+}
+
+.popupHidden {
+	display: none;
+}
+
+.popupVisible{
+  top: 40%;
+  left: 50%;
+  opacity: 1;
+  text-align: center;
+  display: block;
+  background-color: #fff;
+  border: 2px solid #fff;
+  padding: 2px;
+  position: fixed;
+  border-radius: 2px;
+  z-index: 1;
 }
