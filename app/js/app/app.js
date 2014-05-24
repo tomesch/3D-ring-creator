@@ -118,7 +118,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
           p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
 
           curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
-          curvePoints = curve.getPoints(75);
+          curvePoints = curve.getPoints(20);
           curvePoints = curvePoints.slice(0, curvePoints.length - 1);
           pts = pts.concat(curvePoints);
         }
@@ -132,8 +132,8 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         scts.push(twoTothree(val.vertices));
       });
 
-      ring = new Ring(scts, radius, 50);
-      //ring.applyHeightmap([]);
+      ring = new Ring(scts, radius, 20);
+      ring.applyHeightmap([]);
 
       this.mesh = new THREE.Mesh(ring.geometry, material.shiny);
       this.mesh.geometry.computeCentroids();
@@ -158,7 +158,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
           p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
 
           curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
-          curvePoints = curve.getPoints(75);
+          curvePoints = curve.getPoints(20);
           curvePoints = curvePoints.slice(0, curvePoints.length - 1);
           pts = pts.concat(curvePoints);
         }
@@ -172,8 +172,8 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         scts.push(twoTothree(val.vertices));
       });
 
-      ring = new Ring(scts, radius,  50);
-      //ring.applyHeightmap([]);
+      ring = new Ring(scts, radius,  20);
+      ring.applyHeightmap([]);
       this.mesh.geometry.vertices = ring.geometry.vertices;
       this.mesh.geometry.computeCentroids();
       this.mesh.geometry.computeFaceNormals();

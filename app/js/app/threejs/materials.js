@@ -7,8 +7,7 @@ define(['three'], function (THREE) {
     }),
     shiny: new THREE.MeshPhongMaterial({
       color: 0x4c4c52,
-      vertexColors: THREE.VertexColors,
-      side: THREE.DoubleSide
+      vertexColors: THREE.VertexColors
     }),
     wire: new THREE.MeshBasicMaterial({
       wireframe: true,

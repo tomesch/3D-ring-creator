@@ -77,17 +77,17 @@ define(['three'], function (THREE) {
             if (y < sections[i].vertices.length - 1) {
               if (x !== pts.length - 1) {
                 geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset + x + pts.length));
-                geometry.faces.push(new THREE.Face3(offset + x + 1, offset + x + pts.length, offset + x + pts.length + 1));
+                geometry.faces.push(new THREE.Face3(offset + x + pts.length, offset + x + 1, offset + x + pts.length + 1));
               }
               else {
-                geometry.faces.push(new THREE.Face3(offset + x, offset + x + pts.length, offset + length));
-                geometry.faces.push(new THREE.Face3(offset + x + pts.length, offset + length, offset + length + pts.length));
+                geometry.faces.push(new THREE.Face3(offset + x + pts.length, offset + x, offset + length));
+                geometry.faces.push(new THREE.Face3(offset + length + pts.length, offset + x + pts.length, offset + length));
               }
             }
             else {
               if (x !== pts.length - 1) {
-                geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset - length + x + pts.length));
-                geometry.faces.push(new THREE.Face3(offset + x + 1, offset - length + x + pts.length, offset - length + x + pts.length + 1));
+                geometry.faces.push(new THREE.Face3(offset - length + x + pts.length, offset + x, offset + x + 1));
+                geometry.faces.push(new THREE.Face3(offset - length + x + pts.length, offset + x + 1, offset - length + x + pts.length + 1));
               }
               else {
                 geometry.faces.push(new THREE.Face3(offset + x, offset + length, length * (i + 1)));
@@ -99,21 +99,21 @@ define(['three'], function (THREE) {
             if (y < sections[i].vertices.length - 1) {
               if (x !== pts.length - 1) {
                 geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset + x + pts.length));
-                geometry.faces.push(new THREE.Face3(offset + x + 1, offset + x + pts.length, offset + x + pts.length + 1));
+                geometry.faces.push(new THREE.Face3(offset + x + pts.length, offset + x + 1, offset + x + pts.length + 1));
               }
               else {
-                geometry.faces.push(new THREE.Face3(offset + x, offset + x + pts.length, base));
+                geometry.faces.push(new THREE.Face3(offset + x + pts.length, offset + x, base));
                 geometry.faces.push(new THREE.Face3(base, base2, offset + x + pts.length));
               }
             }
             else {
               if (x !== pts.length - 1) {
                 geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset - length + x + pts.length));
-                geometry.faces.push(new THREE.Face3(offset + x + 1, offset - length + x + pts.length, offset - length + x + pts.length + 1));
+                geometry.faces.push(new THREE.Face3(offset - length + x + pts.length, offset + x + 1, offset - length + x + pts.length + 1));
               }
               else {
                 geometry.faces.push(new THREE.Face3(offset + x, base, 0));
-                geometry.faces.push(new THREE.Face3(0, offset + x, length * (i) + x));
+                geometry.faces.push(new THREE.Face3(offset + x, 0, length * (i) + x));
               }
             }
           }
@@ -146,15 +146,17 @@ define(['three'], function (THREE) {
     endIndex = startIndex + (bezierPoints * (facePoints - 1)),
     portionPoints = sectionPoints * (bezierPoints - 1),
     offset = 0,
-    i, y;
+    i, y, x;
 
-    for (i = 0; i < 4; i++) {
-      for (y = startIndex; y <= endIndex; y++) {
-        points.push(offset + y);
+    for (i = 1; i < facePoints - 1; i++) {
+      for (y = 0; y < 4; y++) {
+        for (x = 0; x < bezierPoints - 1; x++){
+          points.push(offset + startIndex + (i * (bezierPoints - 1)) + x); 
+        }
+        offset += portionPoints;
       }
-      offset += portionPoints;
+      offset = 0;
     }
-
     return points;
   },
   centerGeometry = function (sections, geometry) {
