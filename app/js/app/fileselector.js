@@ -9,11 +9,10 @@ define(function () {
     this._input.style.display = 'none';
     document.body.appendChild(this._input);
 
-    this._canvas = document.getElementById('canvas');
+    this.image = document.createElement('img');
+    this.image.style.display = 'none';
+    document.body.appendChild(this.image);
 
-    this._inputData = null;
-
-    // Check changement in
     this._input.addEventListener('change', function (e) {
       e.preventDefault();
       window.dispatchEvent(filechange);
@@ -24,61 +23,38 @@ define(function () {
     this._input.click();
   };
 
-  Selector.prototype.getSelectedFile = function () {
-        var src = this._input.files[0],
-        reader = new FileReader(),
-        image = new Image(),
-        context = this._canvas.getContext('2d'),
-        parent = this;
+  Selector.prototype.getSelectedFile = function getSelectedFile() {
+    var src = this._input.files[0],
+    reader = new FileReader();
+    
+    if (src.type.match('image')) {
+      reader.onloadend = function () {
+        this.image.src = reader.result;
+        console.info('Selected image width: ' + this.image.width + 'px');
+        console.info('Selected image height: ' + this.image.height + 'px');
+        window.dispatchEvent(filereadcomplete);
+      }.bind(this);
 
-        if (!src.type.match('image'))
-        {
-          console.log('File not image');
-          return null;
-        }
-
-        reader.onload = function (e) {
-            image.src = e.target.result;
-
-            //Performance issues for images bigger than 500*500 so we resize if ours is that big
-            parent.resizeImageTooBig(image, 200, 200);
-
-            context.drawImage(image, 0, 0, parent._canvas.width, parent._canvas.height);
-
-            parent._inputData = context.getImageData(0, 0, image.width, image.height);
-
-            window.dispatchEvent(filereadcomplete);
-          };
-        reader.readAsDataURL(this._input.files[0]);
-
-        return src;
-      };
-
-  Selector.prototype.setImageDataInContext = function (imageData) {
-      var context = this._canvas.getContext('2d');
-      context.putImageData(imageData, 0, 0, 0, 0, imageData.width, imageData.height);
-    };
-
-  Selector.prototype.getInputData = function () {
-      return this._inputData;
-    };
-
-  Selector.prototype.resizeImageTooBig = function (image, MAX_WIDTH, MAX_HEIGHT) {
-    var width = image.width,
-    height = image.height;
-
-    if (width > MAX_WIDTH) {
-      height = Math.floor(height * MAX_WIDTH / width);
-      width = MAX_WIDTH;
+      reader.readAsDataURL(this._input.files[0]);
     }
-    if (height > MAX_HEIGHT) {
-      width = Math.floor(width * MAX_HEIGHT / height);
-      height = MAX_HEIGHT;
+    else {
+      console.error('Selected file is not an image');
     }
 
-    this._canvas.setAttribute('width', width);
-    this._canvas.setAttribute('height', height);
+    return src;
   };
 
+  Selector.prototype.urlToData = function (urlData) {
+    var canvas = document.createElement('canvas'),
+    context = canvas.getContext('2d'),
+    image = document.createElement('img');
+
+    image.src = urlData;
+    canvas.setAttribute('width',  image.width);
+    canvas.setAttribute('height', image.height);
+
+    context.drawImage(image, 0, 0, image.width, image.height);
+    return context.getImageData(0, 0, image.width, image.height);
+  };
   return new Selector();
 });

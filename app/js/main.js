@@ -1,6 +1,8 @@
 require.config({
   baseUrl: 'js/app',
   shim: {
+    'cropbox': {deps: ['jquery']},
+    'fancybox' : {deps: ['jquery']},
     'FileSaver': {exports: 'FileSaver'},
     'dat': {exports: 'dat'},
     'threeCore': {exports: 'THREE'},
@@ -9,6 +11,9 @@ require.config({
     'OBJExporter': {deps: ['threeCore'], exports: 'THREE'}
   },
   paths: {
+    cropbox: '../lib/jquery-cropbox/jquery.cropbox',
+    fancybox: '../lib/fancybox/source/jquery.fancybox.pack',
+    jquery: '../lib/jquery/dist/jquery',
     FileSaver: '../lib/FileSaver/FileSaver',
     three: '../lib/three',
     threeCore: '../lib/threejs/build/three',

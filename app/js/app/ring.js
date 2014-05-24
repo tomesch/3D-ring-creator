@@ -150,8 +150,8 @@ define(['three'], function (THREE) {
 
     for (i = 1; i < facePoints - 1; i++) {
       for (y = 0; y < 4; y++) {
-        for (x = 0; x < bezierPoints - 1; x++){
-          points.push(offset + startIndex + (i * (bezierPoints - 1)) + x); 
+        for (x = 0; x < bezierPoints - 1; x++) {
+          points.push(offset + startIndex + (i * (bezierPoints - 1)) + x);
         }
         offset += portionPoints;
       }
@@ -198,8 +198,7 @@ define(['three'], function (THREE) {
       newZ = this.geometry.vertices[points[i]].z;
 
       coef = Math.max(Math.abs(oldY / newY) || 0, Math.abs(oldZ / newZ) || 0);
-
-      this.geometry.vertices[points[i]].setLength(coef + Math.random());
+      this.geometry.vertices[points[i]].setLength(coef + heightmap[i]);
     }
   };
 

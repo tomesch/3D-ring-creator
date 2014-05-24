@@ -1,8 +1,9 @@
-define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector', 'filters', 'heightmap', 'constraints', 'gui', 'threejs/lights'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, selector, Filter, Heightmap, Constraint, gui, lights) {
+define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threejs/materials', 'ring', 'threejs/controls', 'threejs/exporters', 'two', 'twojs/scene', 'section', 'fileselector', 'heightmap', 'constraints', 'gui', 'threejs/lights', 'fancybox', 'cropbox'], function (THREE, scene, camera, renderer, material, Ring, controls, exporters, Two, TwoScene, section, selector, heightmap, Constraint, gui, lights, fancybox, cropbox) {
   'use strict';
   var app = {
     mesh: null,
     sections: [],
+    ring: null,
     init: function () {
       var twoContainers = document.getElementsByClassName('twojs-container'),
       twoScenes = [],
@@ -52,50 +53,34 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         selector.getSelectedFile();
       }.bind(this));
 
-      document.getElementById('popup').addEventListener('click', function (e) {
-        e.stopPropagation();
-      });
-
-      window.addEventListener('click', function () {
-        var popup = document.getElementById('popup');
-
-        popup.classList.remove('popupVisible');
-        popup.classList.add('popupHidden');
-        document.getElementById('background').style.display = 'none';
-      });
-
       window.addEventListener('filereadcomplete', function () {
-        var filter = new Filter(selector.getInputData()),
-        imgData = filter.setGrayScale(),
-        heightmap = null,
-        arrHeightmap = null,
-        popup = document.getElementById('popup'),
-        worker = new Worker('js/app/web_worker_is_heightmap_valid.js');
+        $.fancybox.open(selector.image, {
+          padding: 5,
+          minHeight: 0,
+          minWidth: 0,
+          helpers: {
+            overlay : {closeClick: false}
+          },
+          tpl: {
+            closeBtn : '<a title="Apply heightmap" class="fancybox-validate" href="javascript:;">&#x2713;</a>'
+          },
+          beforeShow: function () {
+            $(selector.image).cropbox({
+              width: 400,
+              height: 75,
+              showControls: 'always'
+            });
+          },
+          afterClose: function () {
+            var dataUrl = $(selector.image).data('cropbox').getDataURL(),
+            imageData = selector.urlToData(dataUrl),
+            heightmapData = heightmap.getHeightMap(imageData, 3 * 255);
 
-        // Apply filter on the image
-        selector.setImageDataInContext(imgData);
+            this.ring.applyHeightmap(heightmapData);
+            this.updateGeometry(this.ring.geometry);
+          }.bind(this)
+        });
 
-        //popup
-        popup.classList.remove('popupHidden');
-        popup.classList.add('popupVisible');
-        document.getElementById('background').style.display = 'block';
-
-        // Create the heightmap
-        heightmap = new Heightmap(imgData);
-        arrHeightmap = heightmap.getHeightMap(3 * 255);
-
-        worker.onmessage = function (e) {
-          //Send request
-          if (e.data === 'Ready') {
-            worker.postMessage({ heightmap: arrHeightmap, width: imgData.width, maxSlope: 500});
-          }
-          //Receive result
-          else {
-            alert('Heightmap is ' + (e.data ? '' : 'not ') + 'valid');
-          }
-        };
-        //Initialize the worker
-        worker.postMessage();
       }.bind(this));
 
       if (next) {
@@ -118,24 +103,22 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
           p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
 
           curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
-          curvePoints = curve.getPoints(20);
+          curvePoints = curve.getPoints(76);
           curvePoints = curvePoints.slice(0, curvePoints.length - 1);
           pts = pts.concat(curvePoints);
         }
         return pts;
       }
       var scts = [],
-      radius = circumference / (Math.PI * 2),
-      ring;
+      radius = circumference / (Math.PI * 2);
 
       this.sections.forEach(function (val) {
         scts.push(twoTothree(val.vertices));
       });
 
-      ring = new Ring(scts, radius, 20);
-      ring.applyHeightmap([]);
+      this.ring = new Ring(scts, radius, 100);
 
-      this.mesh = new THREE.Mesh(ring.geometry, material.shiny);
+      this.mesh = new THREE.Mesh(this.ring.geometry, material.shiny);
       this.mesh.geometry.computeCentroids();
       this.mesh.geometry.computeFaceNormals();
       scene.add(this.mesh);
@@ -158,27 +141,29 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
           p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
 
           curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
-          curvePoints = curve.getPoints(20);
+          curvePoints = curve.getPoints(76);
           curvePoints = curvePoints.slice(0, curvePoints.length - 1);
           pts = pts.concat(curvePoints);
         }
         return pts;
       }
       var scts = [],
-      radius = circumference / (Math.PI * 2),
-      ring;
+      radius = circumference / (Math.PI * 2);
 
       this.sections.forEach(function (val) {
         scts.push(twoTothree(val.vertices));
       });
 
-      ring = new Ring(scts, radius,  20);
-      ring.applyHeightmap([]);
-      this.mesh.geometry.vertices = ring.geometry.vertices;
+      this.ring = new Ring(scts, radius,  100);
+      this.updateGeometry(this.ring.geometry);
+    },
+    updateGeometry: function (geometry) {
+      this.mesh.geometry.vertices = geometry.vertices;
       this.mesh.geometry.computeCentroids();
       this.mesh.geometry.computeFaceNormals();
       this.mesh.geometry.verticesNeedUpdate = true;
       this.mesh.geometry.normalsNeedUpdate = true;
+      this.render();
       controls.orbit.update();
     },
     render: function () {

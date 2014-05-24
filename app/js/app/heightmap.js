@@ -1,14 +1,14 @@
-define(function () {
+define(['filters'], function (filter) {
   'use strict';
-  var Heightmap = function (imageData) {
-    this._imageData = imageData;
+  var Heightmap = function () {
+    // COOL CONSTRUCTOR BRO
   };
 
-  Heightmap.prototype.getHeightMap = function (scale) {
-    var
-    size =  this._imageData.height * this._imageData.width,
+  Heightmap.prototype.getHeightMap = function (imageData, scale) {
+    var imageDataFiltered = filter.setGrayScale(imageData),
+    size =  imageDataFiltered.height * imageDataFiltered.width,
     res = new Float32Array(size),
-    data = this._imageData.data,
+    data = imageDataFiltered.data,
     i = 0,
     j = 0,
     pixelValue = 0;
@@ -25,5 +25,5 @@ define(function () {
     }
     return res;
   };
-  return Heightmap;
+  return new Heightmap();
 });
