@@ -56,7 +56,7 @@ define(['three'], function (THREE) {
     topVerticesMinIndex = sections[i].vertices.length / sections.length,
     topVerticesMaxIndex = topVerticesMinIndex + (topVerticesMinIndex - 1),
     topVertices = [],
-    from, to, spline, pts, x;
+    from, to, spline, pts, x, length, base, base2;
     
     for (i = 0; i < sections.length; i++) {
       for (y = 0; y < sections[i].vertices.length; y++) {
@@ -65,13 +65,57 @@ define(['three'], function (THREE) {
 
         spline = getBezierCurve(from, to);
         pts = spline.getPoints(bezierCurvePoints);
+        pts = pts.slice(0, pts.length - 1);
         
         geometry.vertices = geometry.vertices.concat(pts);
 
-        for (x = 0; x < pts.length - 1; x++) {
-          if (y !== sections[i].vertices.length - 1) {
-            geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset + x + pts.length));
-            geometry.faces.push(new THREE.Face3(offset + x + pts.length, offset + x + 1, offset + x + pts.length + 1));
+        for (x = 0; x < pts.length; x++) {
+          length = (sections[i].vertices.length) * (pts.length);
+          base = y * pts.length;
+          base2 = base + pts.length;
+          if (i != 3) {
+            if(y < sections[i].vertices.length - 1){
+              if (x != pts.length - 1){
+                geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset + x + pts.length));
+                geometry.faces.push(new THREE.Face3(offset + x + 1, offset + x + pts.length, offset + x + pts.length + 1));
+              }
+              else{
+                geometry.faces.push(new THREE.Face3(offset + x, offset + x + pts.length, offset + length));
+                geometry.faces.push(new THREE.Face3(offset + x + pts.length, offset + length, offset + length + pts.length));              
+              }
+            }
+            else{
+              if (x != pts.length - 1){
+                geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset - length + x + pts.length));
+                geometry.faces.push(new THREE.Face3(offset + x + 1, offset - length + x + pts.length, offset - length + x + pts.length + 1));
+              }
+              else{
+                geometry.faces.push(new THREE.Face3(offset + x, offset + length, length * (i+1)));
+                geometry.faces.push(new THREE.Face3(offset + x, length * (i+1), length * (i) + x));
+              }
+            }
+          }
+          else {
+            if(y < sections[i].vertices.length - 1){
+              if (x != pts.length - 1){
+                geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset + x + pts.length));
+                geometry.faces.push(new THREE.Face3(offset + x + 1, offset + x + pts.length, offset + x + pts.length + 1));
+              }
+              else{
+                geometry.faces.push(new THREE.Face3(offset + x, offset + x + pts.length, base));
+                geometry.faces.push(new THREE.Face3(base, base2, offset + x + pts.length));              
+              }
+            }
+            else {
+              if (x != pts.length - 1){
+                geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset - length + x + pts.length));
+                geometry.faces.push(new THREE.Face3(offset + x + 1, offset - length + x + pts.length, offset - length + x + pts.length + 1));
+              }
+              else{
+                geometry.faces.push(new THREE.Face3(offset + x, base, 0));
+                geometry.faces.push(new THREE.Face3(0, offset + x, length * (i) + x));
+              }
+            }
           }
         }
         offset += pts.length;

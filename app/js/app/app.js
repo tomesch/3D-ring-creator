@@ -88,7 +88,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       function twoTothree(vertices) {
         var pts = [],
         i = 0,
-        p0, p0three, p1three, p2three, p3, p3three, curve;
+        p0, p0three, p1three, p2three, p3, p3three, curve, curvePoints;
 
         for (i; i < vertices.length; i++) {
           p0 = vertices[i];
@@ -100,7 +100,9 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
           p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
 
           curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
-          pts = pts.concat(curve.getPoints(50));
+          curvePoints = curve.getPoints(75);
+          curvePoints = curvePoints.slice(0, curvePoints.length - 1);
+          pts = pts.concat(curvePoints);
         }
         return pts;
       }
@@ -113,7 +115,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       });
 
       ring = new Ring(scts, radius, 50);
-      ring.applyHeightmap([]);
+      //ring.applyHeightmap([]);
 
       this.mesh = new THREE.Mesh(ring.geometry, material.shiny);
       this.mesh.geometry.computeCentroids();
@@ -126,7 +128,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       function twoTothree(vertices) {
         var pts = [],
         i = 0,
-        p0, p0three, p1three, p2three, p3, p3three, curve;
+        p0, p0three, p1three, p2three, p3, p3three, curve, curvePoints;
 
         for (i; i < vertices.length; i++) {
           p0 = vertices[i];
@@ -138,9 +140,10 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
           p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
 
           curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
-          pts = pts.concat(curve.getPoints(50));
+          curvePoints = curve.getPoints(75);
+          curvePoints = curvePoints.slice(0, curvePoints.length - 1);
+          pts = pts.concat(curvePoints);
         }
-
         return pts;
       }
       var scts = [],
@@ -151,14 +154,13 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         scts.push(twoTothree(val.vertices));
       });
 
-      ring = new Ring(scts, radius, 50);
-      ring.applyHeightmap([]);
+      ring = new Ring(scts, radius,  50);
+      //ring.applyHeightmap([]);
       this.mesh.geometry.vertices = ring.geometry.vertices;
       this.mesh.geometry.computeCentroids();
       this.mesh.geometry.computeFaceNormals();
       this.mesh.geometry.verticesNeedUpdate = true;
       this.mesh.geometry.normalsNeedUpdate = true;
-      console.log(ring.topVertices);
       controls.orbit.update();
     },
     render: function () {
