@@ -73,45 +73,45 @@ define(['three'], function (THREE) {
           length = (sections[i].vertices.length) * (pts.length);
           base = y * pts.length;
           base2 = base + pts.length;
-          if (i != 3) {
-            if(y < sections[i].vertices.length - 1){
-              if (x != pts.length - 1){
+          if (i !== 3) {
+            if (y < sections[i].vertices.length - 1) {
+              if (x !== pts.length - 1) {
                 geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset + x + pts.length));
                 geometry.faces.push(new THREE.Face3(offset + x + 1, offset + x + pts.length, offset + x + pts.length + 1));
               }
-              else{
+              else {
                 geometry.faces.push(new THREE.Face3(offset + x, offset + x + pts.length, offset + length));
-                geometry.faces.push(new THREE.Face3(offset + x + pts.length, offset + length, offset + length + pts.length));              
+                geometry.faces.push(new THREE.Face3(offset + x + pts.length, offset + length, offset + length + pts.length));
               }
             }
-            else{
-              if (x != pts.length - 1){
+            else {
+              if (x !== pts.length - 1) {
                 geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset - length + x + pts.length));
                 geometry.faces.push(new THREE.Face3(offset + x + 1, offset - length + x + pts.length, offset - length + x + pts.length + 1));
               }
-              else{
-                geometry.faces.push(new THREE.Face3(offset + x, offset + length, length * (i+1)));
-                geometry.faces.push(new THREE.Face3(offset + x, length * (i+1), length * (i) + x));
+              else {
+                geometry.faces.push(new THREE.Face3(offset + x, offset + length, length * (i + 1)));
+                geometry.faces.push(new THREE.Face3(offset + x, length * (i + 1), length * (i) + x));
               }
             }
           }
           else {
-            if(y < sections[i].vertices.length - 1){
-              if (x != pts.length - 1){
+            if (y < sections[i].vertices.length - 1) {
+              if (x !== pts.length - 1) {
                 geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset + x + pts.length));
                 geometry.faces.push(new THREE.Face3(offset + x + 1, offset + x + pts.length, offset + x + pts.length + 1));
               }
-              else{
+              else {
                 geometry.faces.push(new THREE.Face3(offset + x, offset + x + pts.length, base));
-                geometry.faces.push(new THREE.Face3(base, base2, offset + x + pts.length));              
+                geometry.faces.push(new THREE.Face3(base, base2, offset + x + pts.length));
               }
             }
             else {
-              if (x != pts.length - 1){
+              if (x !== pts.length - 1) {
                 geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset - length + x + pts.length));
                 geometry.faces.push(new THREE.Face3(offset + x + 1, offset - length + x + pts.length, offset - length + x + pts.length + 1));
               }
-              else{
+              else {
                 geometry.faces.push(new THREE.Face3(offset + x, base, 0));
                 geometry.faces.push(new THREE.Face3(0, offset + x, length * (i) + x));
               }
@@ -140,21 +140,19 @@ define(['three'], function (THREE) {
     return geometry;
   },
   getTopVertices = function (bezierPoints, sectionPoints) {
-    var facePoints = sectionPoints / 4,
-    startIndex = facePoints * bezierPoints,
-    endIndex = startIndex + bezierPoints,
-    points = [],
+    var points = [],
+    facePoints = (sectionPoints / 4) + 1,
+    startIndex = (facePoints - 1) * (bezierPoints - 1),
+    endIndex = startIndex + (bezierPoints * (facePoints - 1)),
+    portionPoints = sectionPoints * (bezierPoints - 1),
     offset = 0,
-    i, y, x;
+    i, y;
 
-    for (y = 0; y < 4; y++) {
-      for (x = startIndex; x < endIndex; x++) {
-        for (i = 0; i < bezierPoints * facePoints; i += bezierPoints) {
-          points.push(offset + x + i);
-        }
+    for (i = 0; i < 4; i++) {
+      for (y = startIndex; y <= endIndex; y++) {
+        points.push(offset + y);
       }
-      console.log();
-      offset += (facePoints * 3) * bezierPoints + startIndex;
+      offset += portionPoints;
     }
 
     return points;
