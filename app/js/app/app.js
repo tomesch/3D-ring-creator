@@ -52,15 +52,33 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         selector.getSelectedFile();
       }.bind(this));
 
+      document.getElementById('popup').addEventListener('click', function (e) {
+        e.stopPropagation();
+      });
+
+      window.addEventListener('click', function () {
+        var popup = document.getElementById('popup');
+
+        popup.classList.remove('popupVisible');
+        popup.classList.add('popupHidden');
+        document.getElementById('background').style.display = 'none';
+      });
+
       window.addEventListener('filereadcomplete', function () {
         var filter = new Filter(selector.getInputData()),
         imgData = filter.setGrayScale(),
         heightmap = null,
         arrHeightmap = null,
+        popup = document.getElementById('popup'),
         worker = new Worker('js/app/web_worker_is_heightmap_valid.js');
 
         // Apply filter on the image
         selector.setImageDataInContext(imgData);
+
+        //popup
+        popup.classList.remove('popupHidden');
+        popup.classList.add('popupVisible');
+        document.getElementById('background').style.display = 'block';
 
         // Create the heightmap
         heightmap = new Heightmap(imgData);
@@ -109,7 +127,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       var scts = [],
       radius = circumference / (Math.PI * 2),
       ring;
-      
+
       this.sections.forEach(function (val) {
         scts.push(twoTothree(val.vertices));
       });
@@ -149,7 +167,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       var scts = [],
       radius = circumference / (Math.PI * 2),
       ring;
-      
+
       this.sections.forEach(function (val) {
         scts.push(twoTothree(val.vertices));
       });
