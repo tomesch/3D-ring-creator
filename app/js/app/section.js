@@ -35,8 +35,8 @@ define(['two'], function (Two) {
     polygon, rect;
 
     anchors.push(new Two.Anchor(0, 0, 0, 0, 0, 0, Two.Commands.move));
-    anchors.push(new Two.Anchor(0, 10, -10, 10, 0, 30, Two.Commands.curve));
-    anchors.push(new Two.Anchor(50, 10, 50, 30, 60, 10, Two.Commands.curve));
+    anchors.push(new Two.Anchor(0, 10, 0, 10, 0, 30, Two.Commands.curve));
+    anchors.push(new Two.Anchor(50, 10, 50, 30, 50, 10, Two.Commands.curve));
     anchors.push(new Two.Anchor(50, 0, 50, 0, 50, 0, Two.Commands.curve));
 
     polygon = new Two.Polygon(anchors, true, true, true);
