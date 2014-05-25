@@ -127,7 +127,6 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       this.ring = new Ring(scts, radius, 125);
 
       this.mesh = new THREE.Mesh(this.ring.geometry, material.shiny);
-      this.mesh.geometry.computeCentroids();
       this.mesh.geometry.computeFaceNormals();
       scene.add(this.mesh);
 
@@ -175,7 +174,6 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
     },
     updateGeometry: function (geometry) {
       this.mesh.geometry.vertices = geometry.vertices;
-      this.mesh.geometry.computeCentroids();
       this.mesh.geometry.computeFaceNormals();
       this.mesh.geometry.verticesNeedUpdate = true;
       this.mesh.geometry.normalsNeedUpdate = true;

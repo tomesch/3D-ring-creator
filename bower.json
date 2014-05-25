@@ -14,7 +14,6 @@
     "bower_components"
   ],
   "dependencies": {
-    "threejs": "*",
     "requirejs": "*",
     "two": "~0.3.0",
     "threejs-controls": "*",
@@ -23,6 +22,7 @@
     "FileSaver": "*",
     "jquery": "~2.1.1",
     "fancybox": "~2.1.5",
-    "jquery-cropbox": "~0.1.7"
+    "jquery-cropbox": "~0.1.7",
+    "threejs": "*"
   }
 }
