@@ -67,8 +67,8 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
           },
           beforeShow: function () {
             $(selector.image).cropbox({
-              width: 400,
-              height: 75,
+              width: 500,
+              height: 50,
               showControls: 'always'
             });
           },
@@ -96,18 +96,25 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         p0, p0three, p1three, p2three, p3, p3three, curve, curvePoints;
 
         for (i; i < vertices.length; i++) {
-          p0 = vertices[i];
-          p0three = new THREE.Vector3(p0.x / 10, p0.y / 10, 0);
-          p3 = vertices[(i + 1) % vertices.length];
-          p3three = new THREE.Vector3(p3.x / 10, p3.y / 10, 0);
+          if (i < 3) {
+            p0 = vertices[i];
+            p0three = new THREE.Vector3(p0.x / 10, p0.y / 10, 0);
+            p3 = vertices[(i + 1) % vertices.length];
+            p3three = new THREE.Vector3(p3.x / 10, p3.y / 10, 0);
 
-          p1three = new THREE.Vector3(p0.controls.right.x / 10, p0.controls.right.y / 10, 0);
-          p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
+            p1three = new THREE.Vector3(p0.controls.right.x / 10, p0.controls.right.y / 10, 0);
+            p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
 
-          curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
-          curvePoints = curve.getPoints(76);
-          curvePoints = curvePoints.slice(0, curvePoints.length - 1);
-          pts = pts.concat(curvePoints);
+            curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
+            curvePoints = curve.getPoints(51);
+            curvePoints = curvePoints.slice(0, curvePoints.length - 1);
+            pts = pts.concat(curvePoints);
+          }
+          else {
+            p0 = vertices[i];
+            p0three = new THREE.Vector3(p0.x / 10, p0.y / 10, 0);
+            pts.push(p0three);
+          }
         }
         return pts;
       }
@@ -117,8 +124,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       this.sections.forEach(function (val) {
         scts.push(twoTothree(val.vertices));
       });
-
-      this.ring = new Ring(scts, radius, 100);
+      this.ring = new Ring(scts, radius, 125);
 
       this.mesh = new THREE.Mesh(this.ring.geometry, material.shiny);
       this.mesh.geometry.computeCentroids();
@@ -134,18 +140,25 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         p0, p0three, p1three, p2three, p3, p3three, curve, curvePoints;
 
         for (i; i < vertices.length; i++) {
-          p0 = vertices[i];
-          p0three = new THREE.Vector3(p0.x / 10, p0.y / 10, 0);
-          p3 = vertices[(i + 1) % vertices.length];
-          p3three = new THREE.Vector3(p3.x / 10, p3.y / 10, 0);
+          if (i < 3) {
+            p0 = vertices[i];
+            p0three = new THREE.Vector3(p0.x / 10, p0.y / 10, 0);
+            p3 = vertices[(i + 1) % vertices.length];
+            p3three = new THREE.Vector3(p3.x / 10, p3.y / 10, 0);
 
-          p1three = new THREE.Vector3(p0.controls.right.x / 10, p0.controls.right.y / 10, 0);
-          p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
+            p1three = new THREE.Vector3(p0.controls.right.x / 10, p0.controls.right.y / 10, 0);
+            p2three = new THREE.Vector3(p3.controls.left.x / 10, p3.controls.left.y / 10, 0);
 
-          curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
-          curvePoints = curve.getPoints(76);
-          curvePoints = curvePoints.slice(0, curvePoints.length - 1);
-          pts = pts.concat(curvePoints);
+            curve = new THREE.CubicBezierCurve3(p0three, p1three, p2three, p3three);
+            curvePoints = curve.getPoints(51);
+            curvePoints = curvePoints.slice(0, curvePoints.length - 1);
+            pts = pts.concat(curvePoints);
+          }
+          else {
+            p0 = vertices[i];
+            p0three = new THREE.Vector3(p0.x / 10, p0.y / 10, 0);
+            pts.push(p0three);
+          }
         }
         return pts;
       }
@@ -156,7 +169,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         scts.push(twoTothree(val.vertices));
       });
 
-      this.ring = new Ring(scts, radius,  100);
+      this.ring = new Ring(scts, radius,  125);
       this.ring.applyHeightmap(this.heightmapData);
       this.updateGeometry(this.ring.geometry);
     },

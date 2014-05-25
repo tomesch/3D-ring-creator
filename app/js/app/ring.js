@@ -48,79 +48,52 @@ define(['three'], function (THREE) {
     return new THREE.CubicBezierCurve3(p0, p1, p2, p3);
   },
   drawRing = function (sections, bezierCurvePoints) {
-    var offset = 0,
-    i = 0,
-    y = 0,
-    geometry = new THREE.Geometry(),
-    topVerticesColor = new THREE.Color(0xff0000),
-    topVerticesMinIndex = sections[i].vertices.length / sections.length,
-    topVerticesMaxIndex = topVerticesMinIndex + (topVerticesMinIndex - 1),
-    topVertices = [],
-    from, to, spline, pts, x, length, base, base2;
+    var geometry = new THREE.Geometry(),
+    lineLength = sections.length * bezierCurvePoints,
+    from, to, spline, pts, i, y;
     
-    for (i = 0; i < sections.length; i++) {
-      for (y = 0; y < sections[i].vertices.length; y++) {
-        from = sections[i].vertices[y];
-        to = sections[(i + 1) % sections.length].vertices[y];
+    // Add the vertices to the geometry
+    for (i = 0; i < sections[0].vertices.length; i++) {
+      // vertices per section
+      for (y = 0; y < sections.length; y++) {
+        // sections per ring
+        from = sections[y].vertices[i];
+        to = sections[(y + 1) % sections.length].vertices[i];
 
         spline = getBezierCurve(from, to);
         pts = spline.getPoints(bezierCurvePoints);
         pts = pts.slice(0, pts.length - 1);
-        
-        geometry.vertices = geometry.vertices.concat(pts);
 
-        for (x = 0; x < pts.length; x++) {
-          length = (sections[i].vertices.length) * (pts.length);
-          base = y * pts.length;
-          base2 = base + pts.length;
-          if (i !== 3) {
-            if (y < sections[i].vertices.length - 1) {
-              if (x !== pts.length - 1) {
-                geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset + x + pts.length));
-                geometry.faces.push(new THREE.Face3(offset + x + pts.length, offset + x + 1, offset + x + pts.length + 1));
-              }
-              else {
-                geometry.faces.push(new THREE.Face3(offset + x + pts.length, offset + x, offset + length));
-                geometry.faces.push(new THREE.Face3(offset + length + pts.length, offset + x + pts.length, offset + length));
-              }
-            }
-            else {
-              if (x !== pts.length - 1) {
-                geometry.faces.push(new THREE.Face3(offset - length + x + pts.length, offset + x, offset + x + 1));
-                geometry.faces.push(new THREE.Face3(offset - length + x + pts.length, offset + x + 1, offset - length + x + pts.length + 1));
-              }
-              else {
-                geometry.faces.push(new THREE.Face3(offset + x, offset + length, length * (i + 1)));
-                geometry.faces.push(new THREE.Face3(offset + x, length * (i + 1), length * (i) + x));
-              }
-            }
-          }
-          else {
-            if (y < sections[i].vertices.length - 1) {
-              if (x !== pts.length - 1) {
-                geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset + x + pts.length));
-                geometry.faces.push(new THREE.Face3(offset + x + pts.length, offset + x + 1, offset + x + pts.length + 1));
-              }
-              else {
-                geometry.faces.push(new THREE.Face3(offset + x + pts.length, offset + x, base));
-                geometry.faces.push(new THREE.Face3(base, base2, offset + x + pts.length));
-              }
-            }
-            else {
-              if (x !== pts.length - 1) {
-                geometry.faces.push(new THREE.Face3(offset + x, offset + x + 1, offset - length + x + pts.length));
-                geometry.faces.push(new THREE.Face3(offset - length + x + pts.length, offset + x + 1, offset - length + x + pts.length + 1));
-              }
-              else {
-                geometry.faces.push(new THREE.Face3(offset + x, base, 0));
-                geometry.faces.push(new THREE.Face3(offset + x, 0, length * (i) + x));
-              }
-            }
-          }
-        }
-        offset += pts.length;
+        geometry.vertices = geometry.vertices.concat(pts);
       }
     }
+    // Add the faces to the geometry
+    for (i = 0; i < geometry.vertices.length; i++) {
+      if (i < geometry.vertices.length - lineLength) {
+        if (i % lineLength === lineLength - 1) {
+          // last point of line
+          geometry.faces.push(new THREE.Face3(i, i + 1, i + lineLength));
+          geometry.faces.push(new THREE.Face3(i + 1, i, i - lineLength + 1));
+        }
+        else {
+          geometry.faces.push(new THREE.Face3(i, i + 1, i + lineLength));
+          geometry.faces.push(new THREE.Face3(i + lineLength, i + 1, i + lineLength + 1));
+        }
+      }
+      else {
+        if (i % lineLength === lineLength - 1) {
+          // last point of line
+          geometry.faces.push(new THREE.Face3(i % lineLength, i, (i % lineLength) - lineLength + 1));
+          geometry.faces.push(new THREE.Face3(i, i - lineLength  + 1, (i % lineLength) - lineLength + 1));
+
+        }
+        else {
+          geometry.faces.push(new THREE.Face3(i, i + 1, i % lineLength));
+          geometry.faces.push(new THREE.Face3(i % lineLength, i + 1, (i + 1) % lineLength));
+        }
+      }
+    }
+
     return geometry;
   },
   getGeometry = function (sec, radius, bezierPoints) {
@@ -139,37 +112,32 @@ define(['three'], function (THREE) {
     geometry = centerGeometry(sec, geometry);
     return geometry;
   },
-  getTopVertices = function (bezierPoints, sectionPoints) {
+  getTopVertices = function (bezierPoints, sections) {
     var points = [],
-    facePoints = (sectionPoints / 4) + 1,
-    startIndex = (facePoints - 1) * (bezierPoints - 1),
-    endIndex = startIndex + (bezierPoints * (facePoints - 1)),
-    portionPoints = sectionPoints * (bezierPoints - 1),
-    offset = 0,
-    i, y, x;
+    lineLength = bezierPoints * sections.length,
+    facePoints = ((sections[0].length + 2) / 3),
+    startIndex = facePoints * lineLength,
+    endIndex = startIndex * 2,
+    i;
 
-    for (i = 1; i < facePoints - 1; i++) {
-      for (y = 0; y < 4; y++) {
-        for (x = 0; x < bezierPoints - 1; x++) {
-          points.push(offset + startIndex + (i * (bezierPoints - 1)) + x);
-        }
-        offset += portionPoints;
-      }
-      offset = 0;
+    for (i = startIndex; i < endIndex; i++) {
+      points.push(i);
     }
+
     return points;
   },
   centerGeometry = function (sections, geometry) {
     var innerGeometry = new THREE.Geometry(),
-    facePoints = sections[0].length / 4,
-    startIndex = facePoints * 3,
-    endIndex = facePoints * 4,
-    i, y, width;
+    lineLength = geometry.vertices.length / sections.length,
+    facePoints = ((sections[0].length + 2) / 3),
+    i, width;
 
-    for (i = 0; i < sections.length; i++) {
-      for (y = startIndex; y < endIndex; y++) {
-        innerGeometry.vertices.push(sections[i][y]);
-      }
+    for (i = 0; i < lineLength; i++) {
+      innerGeometry.vertices.push(geometry.vertices[i]);
+    }
+
+    for (i = geometry.vertices.length - lineLength; i < geometry.vertices.length; i++) {
+      innerGeometry.vertices.push(geometry.vertices[i]);
     }
 
     innerGeometry.computeBoundingBox();
@@ -180,12 +148,12 @@ define(['three'], function (THREE) {
   Ring = function (sections, radius, bezierPoints) {
     this._sections = sections;
     this._radius = radius;
-    this._curvePoints = bezierPoints + 1;
+    this._curvePoints = bezierPoints;
     this.geometry = getGeometry(sections, radius, bezierPoints);
   };
   
   Ring.prototype.applyHeightmap = function (heightmap) {
-    var points = getTopVertices(this._curvePoints, this._sections[0].length),
+    var points = getTopVertices(this._curvePoints, this._sections),
     i = 0,
     oldY, oldZ, newY, newZ, coef;
 
