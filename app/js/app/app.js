@@ -3,6 +3,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
   var app = {
     mesh: null,
     sections: [],
+    heightmapData: [],
     ring: null,
     init: function () {
       var twoContainers = document.getElementsByClassName('twojs-container'),
@@ -73,10 +74,11 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
           },
           afterClose: function () {
             var dataUrl = $(selector.image).data('cropbox').getDataURL(),
-            imageData = selector.urlToData(dataUrl),
-            heightmapData = heightmap.getHeightMap(imageData, 3 * 255);
+            imageData = selector.urlToData(dataUrl);
 
-            this.ring.applyHeightmap(heightmapData);
+            this.heightmapData = heightmap.getHeightMap(imageData, 3 * 255);
+
+            this.ring.applyHeightmap(this.heightmapData);
             this.updateGeometry(this.ring.geometry);
           }.bind(this)
         });
@@ -155,6 +157,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       });
 
       this.ring = new Ring(scts, radius,  100);
+      this.ring.applyHeightmap(this.heightmapData);
       this.updateGeometry(this.ring.geometry);
     },
     updateGeometry: function (geometry) {

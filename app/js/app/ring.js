@@ -198,7 +198,7 @@ define(['three'], function (THREE) {
       newZ = this.geometry.vertices[points[i]].z;
 
       coef = Math.max(Math.abs(oldY / newY) || 0, Math.abs(oldZ / newZ) || 0);
-      this.geometry.vertices[points[i]].setLength(coef + heightmap[i]);
+      this.geometry.vertices[points[i]].setLength(coef + (heightmap[i] || 0));
     }
   };
 
