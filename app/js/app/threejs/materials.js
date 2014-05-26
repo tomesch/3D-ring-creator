@@ -5,7 +5,8 @@ define(['three'], function (THREE) {
       color: 0x4c4c52
     }),
     shiny: new THREE.MeshPhongMaterial({
-      color: 0x4c4c52
+      color: 0x646464,
+      shading: THREE.SmoothShading
     }),
     wire: new THREE.MeshBasicMaterial({
       wireframe: true,

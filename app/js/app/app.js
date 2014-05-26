@@ -134,6 +134,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
 
       this.mesh = new THREE.Mesh(this.ring.geometry, material.shiny);
       this.mesh.geometry.computeFaceNormals();
+      this.mesh.geometry.computeVertexNormals();
       scene.add(this.mesh);
 
       controls.orbit.update();
@@ -185,6 +186,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
     updateGeometry: function (geometry) {
       this.mesh.geometry.vertices = geometry.vertices;
       this.mesh.geometry.computeFaceNormals();
+      this.mesh.geometry.computeVertexNormals();
       this.mesh.geometry.verticesNeedUpdate = true;
       this.mesh.geometry.normalsNeedUpdate = true;
       this.render();
