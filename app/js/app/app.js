@@ -76,10 +76,10 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
             var dataUrl = $(selector.image).data('cropbox').getDataURL(),
             imageData = selector.urlToData(dataUrl);
 
-            this.heightmapData = heightmap.getHeightMap(imageData, 3 * 255);
+            $(selector.image).data('cropbox').remove();
 
-            this.ring.applyHeightmap(this.heightmapData);
-            this.updateGeometry(this.ring.geometry);
+            this.heightmapData = heightmap.getHeightMap(imageData, 3 * 255);
+            this.updateGeometry(this.ring.applyHeightmap(this.heightmapData));
           }.bind(this)
         });
 

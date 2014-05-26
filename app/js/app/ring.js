@@ -154,20 +154,23 @@ define(['three'], function (THREE) {
   
   Ring.prototype.applyHeightmap = function (heightmap) {
     var points = getTopVertices(this._curvePoints, this._sections),
+    geometry = this.geometry.clone(),
     i = 0,
     oldY, oldZ, newY, newZ, coef;
 
     for (i; i < points.length; i++) {
-      oldY = this.geometry.vertices[points[i]].y;
-      oldZ = this.geometry.vertices[points[i]].z;
+      oldY = geometry.vertices[points[i]].y;
+      oldZ = geometry.vertices[points[i]].z;
       
-      this.geometry.vertices[points[i]].normalize();
-      newY = this.geometry.vertices[points[i]].y;
-      newZ = this.geometry.vertices[points[i]].z;
+      geometry.vertices[points[i]].normalize();
+      newY = geometry.vertices[points[i]].y;
+      newZ = geometry.vertices[points[i]].z;
 
       coef = Math.max(Math.abs(oldY / newY) || 0, Math.abs(oldZ / newZ) || 0);
-      this.geometry.vertices[points[i]].setLength(coef + (heightmap[i] || 0));
+      geometry.vertices[points[i]].setLength(coef + (heightmap[i] || 0));
     }
+
+    return geometry;
   };
 
   return Ring;
