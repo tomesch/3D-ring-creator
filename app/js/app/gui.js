@@ -14,7 +14,6 @@ define(['dat'], function (dat) {
       },
       reset: function () {
         var resetEvent = new Event('reset');
-        this.circumference = 50;
         window.dispatchEvent(resetEvent);
       }
     };
