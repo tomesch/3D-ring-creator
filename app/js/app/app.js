@@ -4,10 +4,10 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
     mesh: null,
     sections: [],
     heightmapData: [],
+    twoScenes: [],
     ring: null,
     init: function () {
       var twoContainers = document.getElementsByClassName('twojs-container'),
-      twoScenes = [],
       i = 0,
       twoScene;
 
@@ -16,7 +16,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
 
         for (i; i < twoContainers.length; i += 1) {
           twoScene = new TwoScene(twoContainers[i]);
-          twoScenes.push(twoScene);
+          this.twoScenes.push(twoScene);
           this.sections.push(section(twoScene));
           twoScene.update();
         }
@@ -34,6 +34,12 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
         this.render();
       }.bind(this));
 
+      window.addEventListener('reset', function () {
+        this.heightmapData = [];
+
+        this.updateRing(this.sections, gui.param.circumference, false);
+      }.bind(this));
+
       window.addEventListener('import', function () {
         selector.select();
       }.bind(this));
@@ -43,11 +49,11 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       }.bind(this));
 
       window.addEventListener('sectionchange', function () {
-        this.updateRing(this.sections, gui.param.circumference);
+        this.updateRing(this.sections, gui.param.circumference, true);
       }.bind(this));
 
       window.addEventListener('circumferencechange', function () {
-        this.updateRing(this.sections, gui.param.circumference);
+        this.updateRing(this.sections, gui.param.circumference, true);
       }.bind(this));
 
       window.addEventListener('filechange', function () {
@@ -121,7 +127,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       var scts = [],
       radius = circumference / (Math.PI * 2);
 
-      this.sections.forEach(function (val) {
+      sections.forEach(function (val) {
         scts.push(twoTothree(val.vertices));
       });
       this.ring = new Ring(scts, radius, 125);
@@ -132,7 +138,7 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
 
       controls.orbit.update();
     },
-    updateRing: function (sections, circumference) {
+    updateRing: function (sections, circumference, applyHeightmap) {
       function twoTothree(vertices) {
         var pts = [],
         i = 0,
@@ -164,13 +170,17 @@ define(['three', 'threejs/scene', 'threejs/cameras', 'threejs/renderer', 'threej
       var scts = [],
       radius = circumference / (Math.PI * 2);
 
-      this.sections.forEach(function (val) {
+      sections.forEach(function (val) {
         scts.push(twoTothree(val.vertices));
       });
 
       this.ring = new Ring(scts, radius,  125);
-      this.ring.applyHeightmap(this.heightmapData);
-      this.updateGeometry(this.ring.geometry);
+      if (applyHeightmap) {
+        this.updateGeometry(this.ring.applyHeightmap(this.heightmapData));
+      }
+      else {
+        this.updateGeometry(this.ring.geometry);
+      }
     },
     updateGeometry: function (geometry) {
       this.mesh.geometry.vertices = geometry.vertices;

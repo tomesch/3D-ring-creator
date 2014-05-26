@@ -11,19 +11,24 @@ define(['dat'], function (dat) {
       image: function () {
         var importEvent = new Event('import');
         window.dispatchEvent(importEvent);
+      },
+      reset: function () {
+        var resetEvent = new Event('reset');
+        this.circumference = 50;
+        window.dispatchEvent(resetEvent);
       }
     };
   };
   
   Gui.prototype.init = function init() {
     this.gui = new dat.GUI();
-    this.gui.add(this.param, 'circumference').min(36).max(77).step(1).name('Circumference').onFinishChange(function (value) {
+    this.gui.add(this.param, 'circumference').min(36).max(77).step(1).name('Circumference').listen().onFinishChange(function (value) {
       var circumferencechange = new Event('circumferencechange');
       window.dispatchEvent(circumferencechange);
     });
     this.gui.add(this.param, 'image').name('Import image');
     this.gui.add(this.param, 'export').name('Export as OBJ');
-
+    this.gui.add(this.param, 'reset').name('Reset heightmap');
   };
 
   return new Gui();
