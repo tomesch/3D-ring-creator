@@ -1,4 +1,5 @@
 #jweel-ring
+![](http://i.imgur.com/txBKU1W.gif)
 ##Project architecture
 
 This projects uses the JavaScript file and module loader [Require.js](http://requirejs.org/). Therefore each functional module lives in it's own file. All these modules can be found under `app/js/app`.
